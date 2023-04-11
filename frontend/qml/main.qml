@@ -8,26 +8,31 @@ import "./items"
 Window {
 	id: window
 
-	width: 640
-	height: 480
+    width: 800
+    height: 600
 	visible: true
-	title: qsTr("Stopwatch")
+    title: qsTr("Task manager")
 
-	color: "black"
+    color: "#101010"
 
-//	signal startStopButtonClicked
-//	signal resetButtonClicked
 
-	Item {
-		id: dialItem
+    Column {
+        id: column
 
 		anchors.fill: parent
+        spacing: 3
 
-		Dial {
-			id: dial
+        Repeater {
+            id: repeater
 
-			anchors.centerIn: parent
-			diameter: Math.min(parent.width, parent.height)
-		}
+            model: task_manager_model.task_list
+
+            Task {
+                taskModel: modelData
+
+            }
+
+        }
+
 	}
 }
