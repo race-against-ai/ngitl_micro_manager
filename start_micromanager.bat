@@ -1,0 +1,1 @@
+cd stopwatch_backend & venv\Scripts\activate & python main.py & pause

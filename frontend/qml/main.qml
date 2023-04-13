@@ -11,7 +11,7 @@ Window {
     width: 800
     height: 600
 	visible: true
-    title: qsTr("Task manager")
+    title: qsTr("NGITL MicroManager")
 
     color: "#101010"
 

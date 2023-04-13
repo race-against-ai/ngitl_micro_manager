@@ -11,7 +11,7 @@ Rectangle {
     width: 800
     height: 64
 
-    color: "black"
+    color: "grey"
     border.width: 0
     radius: 20
 
@@ -39,7 +39,9 @@ Rectangle {
             Button {
                 text: "Log"
 
-                onClicked: taskModel.open_log_request()
+                onClicked: {
+                    taskModel.open_log_request()
+                }
             }
 
             Button {
@@ -55,6 +57,11 @@ Rectangle {
 
             Layout.alignment: Qt.AlignVCenter
             text: visualPosition == 1.0 ? "Running" : "Stopped"
+            onClicked: {
+                if (visualPosition == 1.0){
+                    taskModel.open_executable()
+                }
+            }
 
         }
 
@@ -67,6 +74,17 @@ Rectangle {
 
             height: parent.height * 0.9
             width: height
+
+            radius: height/3
+
+            Text {
+                id: status
+                text: qsTr("Closed")
+//                font.pointSize: Math.min(width * 0.5, height * 0.5)
+                wrapMode:  Text.Wrap
+                textFormat:  Text.PlainText
+                anchors.centerIn: parent
+            }
         }
 
     }

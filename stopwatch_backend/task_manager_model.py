@@ -12,10 +12,15 @@ class TaskModel(QObject):
 
     open_log_request = Signal(name="open_log_request")
     open_config_request = Signal(name="open_config_request")
+    open_exe_request = Signal(name="open_exe_request")
 
     def __init__(self, name: str) -> None:
         QObject.__init__(self)
         self._name = name
+        self.open_config_request.connect(self.handle_open_config_request)
+
+    def handle_open_config_request(self):
+        print("foo2")
 
     @Property("QString", notify=name_changed)
     def name(self) -> str:
