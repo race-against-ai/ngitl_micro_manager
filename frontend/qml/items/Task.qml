@@ -59,7 +59,10 @@ Rectangle {
             text: visualPosition == 1.0 ? "Running" : "Stopped"
             onClicked: {
                 if (visualPosition == 1.0){
-                    taskModel.open_executable()
+                    taskModel.run_exe_request()
+                }
+                if (visualPosition == 0.0){
+                    taskModel.close_exe_request()
                 }
             }
 

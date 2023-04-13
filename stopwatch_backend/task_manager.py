@@ -7,7 +7,7 @@ import time
 import json
 import subprocess
 from pathlib import Path
-from typing import List, Optional
+from typing import List, Optional, Dict
 
 from PySide6.QtGui import QGuiApplication
 from PySide6.QtQml import QQmlApplicationEngine
@@ -34,7 +34,7 @@ class TaskManager:
             for entry in self.tasks:
                 tasks.append(Task(entry))
 
-        self._process: dict[str:subprocess] = {}
+        self._process: Dict[str, subprocess.Popen] = {}
 
         self.task_manager_model.append_tasks(tasks)
 
@@ -45,16 +45,17 @@ class TaskManager:
         """Run the wanted executable and set its delay after startup"""
         self._process[name] = subprocess.Popen(rf'{path}\{file}',
                                    cwd=path,
-                                   creationflags=subprocess.CREATE_NEW_CONSOLE,
-                                   stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                                   creationflags=subprocess.CREATE_NEW_CONSOLE)
+                                   # stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
         time.sleep(delay)
 
     def kill_process(self, name: str) -> None:
         """Forcefully closes the Task"""
         if name in self._process:
-            subprocess.call(['taskkill', '/F', '/T', '/PID]', str(self.process)])
-            self._process.pop('name')
+            # self._process[name].terminate()
+            subprocess.call(['taskkill', '/F', '/T', '/PID]', str(self._process[name].pid)])
+            self._process.pop(name)
         else:
             print(f"Process with the ID: {name} isn't Running")
 
