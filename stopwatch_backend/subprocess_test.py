@@ -1,3 +1,7 @@
+""""
+Copyright (C) 2023 twyleg, PhilippTrashman
+"""
+
 import subprocess
 from time import sleep
 

@@ -1,3 +1,7 @@
+""""
+Copyright (C) 2023 twyleg, PhilippTrashman
+"""
+
 from stopwatch_backend.task_manager_model import TaskModel
 from PySide6.QtCore import QObject, Signal, Property, Slot
 import subprocess

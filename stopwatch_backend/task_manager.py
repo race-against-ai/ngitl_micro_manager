@@ -1,5 +1,5 @@
 """"
-Copyright (C) 2023 twyleg
+Copyright (C) 2023 twyleg, PhilippTrashman
 """
 import os
 import sys

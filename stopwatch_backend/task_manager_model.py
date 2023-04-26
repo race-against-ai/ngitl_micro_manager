@@ -1,16 +1,33 @@
 """"
-Copyright (C) 2022 twyleg
+Copyright (C) 2023 twyleg, PhilippTrashman
 """
+import os
+import platform
+import subprocess
+# from task import Task
+import time
 from typing import List
 
 from PySide6.QtCore import QObject, Signal, Property
-# from task import Task
-import time
-import subprocess
-import os
+
+
+def run_process(process_name: str, path: str, file: str, delay: float) -> subprocess.Popen:
+    """Run the wanted executable and set its delay after startup"""
+    print(f'Starting Process {process_name}')
+
+    process = subprocess.Popen(file,
+                               cwd=path,
+                               creationflags=subprocess.CREATE_NEW_CONSOLE)
+
+    if delay > 0:
+        print(f'Pausing for {delay} seconds')
+        time.sleep(delay)
+
+    return process
 
 
 class TaskModel(QObject):
+    """TaskModel Class for Qt, currently the button functions are nested here :( """
     name_changed = Signal(name="name_changed")
 
     open_log_request = Signal(name="open_log_request")
@@ -37,9 +54,25 @@ class TaskModel(QObject):
 
     def handle_open_config_request(self):
         print(f"Task: {self.name} - open config requested")
+        filepath = "settings.json"
+
+        if platform.system() == 'Darwin':  # macOS
+            subprocess.call(('open', filepath))
+        elif platform.system() == 'Windows':  # Windows
+            os.startfile(filepath)
+        else:  # Linux
+            subprocess.call(('xdg-open', filepath))
 
     def handle_open_log_request(self):
         print(f'Task: {self.name} - open log requested with Log Level "{self.log_level}"')
+        filepath = "example.jpg"
+
+        if platform.system() == 'Darwin':  # macOS
+            subprocess.call(('open', filepath))
+        elif platform.system() == 'Windows':  # Windows
+            os.startfile(filepath)
+        else:  # Linux
+            subprocess.call(('xdg-open', filepath))
 
     def handle_run_exe_request(self):
         print(f'Task: {self.name} - open exe requested')
@@ -59,19 +92,17 @@ class TaskModel(QObject):
 
     def run_process(self) -> None:
         """Run the wanted executable and set its delay after startup"""
-        print(f'Starting Process {self.name}')
-        image_path = "example.jpg"
 
-        self.process = subprocess.Popen(f"python while_true.py",
-                         cwd=r"C:\Users\VW2SMDW\Repos\ngitl_micro_manager\stopwatch_backend",
-                         creationflags=subprocess.CREATE_NEW_CONSOLE)
-        # self.process = subprocess.Popen(rf'{self.path}\{self.executable}',
-        #                                 cwd=self.path,
-        #                                 creationflags=subprocess.CREATE_NEW_CONSOLE)
-        #                                 # stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        #
-        print(f'Pausing for {self.delay} seconds')
-        time.sleep(self.delay)
+        self.process = run_process(self._name,
+                                   r"C:\Users\VW2SMDW\Repos\ngitl_micro_manager\stopwatch_backend",
+                                   "python while_true.py",
+                                   0)
+
+        # following code snippet is used when wanting to read out the executable from the settings.json...
+        # currently commented out because we haven't implemented the bin folder format
+
+        # self.process = run_process(self.name, self.path, self.executable, self.delay)
+
 
     def terminate_process(self) -> None:
         if self.process is not None:

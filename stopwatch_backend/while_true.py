@@ -1,3 +1,7 @@
+""""
+Copyright (C) 2023 PhilippTrashman
+"""
+
 import time
 
 while True:
