@@ -103,17 +103,58 @@ class TaskModel(QObject):
 
         # self.process = run_process(self.name, self.path, self.executable, self.delay)
 
-
     def terminate_process(self) -> None:
         if self.process is not None:
             print(f'Terminating {self.name}')
             self.process.terminate()
             self.process = None
         else:
-            print(f"Executable isn't running")
+            print(f"{self.name} is not running")
+
+    def kill_process(self) -> None:
+        if self.process is not None:
+            print(f'Force Terminating {self.name}')
+            subprocess.call(['taskkill', '/F', '/T', '/PID', str(self.process.pid)])
+        else:
+            print(f'Cannot kill {self.name}: not running')
 
 
 class TaskManagerModel(QObject):
+    project_changed = Signal(name="task_list_changed")
+    settings_changed = Signal(name="settings_changed")
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self._project = ProjectModel(self)
+        self._settings = SettingsModel(self)
+
+    @Property("QObject", notify=settings_changed)
+    def settings(self):
+        return self._settings
+
+    @Property("QObject", notify=project_changed)
+    def project(self):
+        return self._project
+
+
+class SettingsModel(QObject):
+
+    theme_request = Signal(name="theme_change_requested")
+    open_folder_request = Signal(name="open_folder_request")
+
+    def __init__(self, parent=None) -> None:
+        super().__init__(parent)
+        self.theme_request.connect(self.handle_theme_change)
+        self.open_folder_request.connect(self.handle_open_folder_request)
+
+    def handle_theme_change(self) -> None:
+        print("changing theme")
+
+    def handle_open_folder_request(self) -> None:
+        print("Opening Folder")
+
+
+class ProjectModel(QObject):
     task_list_changed = Signal(name="task_list_changed")
 
     def __init__(self, parent=None):

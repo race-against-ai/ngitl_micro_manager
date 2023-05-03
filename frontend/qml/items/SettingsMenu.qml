@@ -12,11 +12,11 @@ Menu {
 
     background: Rectangle{
 
-        color: "#262b33"
+        color: window.primary_color
         height: parent.height
         width: parent.width
         border.width: 2
-        border.color: '#2f343f'
+        border.color: window.secondary_color
 
     }
 
@@ -42,6 +42,22 @@ Menu {
             height: 50
             width: parent.width - 6
             buttonText: "Delay"
+
+
+    }
+
+    BurgerButton{
+            height: 50
+            width: parent.width - 6
+            buttonText: "Log Level"
+
+
+    }
+
+    BurgerButton{
+            height: 50
+            width: parent.width - 6
+            buttonText: "Resolution"
 
     }
 

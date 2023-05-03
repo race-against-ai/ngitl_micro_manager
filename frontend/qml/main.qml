@@ -6,26 +6,23 @@ import QtQuick.Controls 2.15
 import "./items"
 
 Window {
-	id: window
+    id: window
 
     width: 800
     height: 600
 
     minimumWidth: 800
     minimumHeight: 600
-	visible: true
+    visible: true
     title: qsTr("NGITL MicroManager")
 
-    property color background: "#262b33" // background
-    property color middleground: "#2f343f" // complementary to the background
-    property color foreground: '#4c5e7c' // foreground
+    property color primary_color: "#262b33" // background
+    property color secondary_color: "#2f343f" // complementary to the background
+    property color tertiary_color: '#4c5e7c' // foreground
 
     property color lightFontColor: '#F4EEE0' // Kinda white but not really
 
-    color: background
-
-
-
+    color: primary_color
 
     Column {
         id: column
@@ -35,13 +32,15 @@ Window {
 
         Rectangle {
             width: parent.width
-            height: parent.height/10
+            height: parent.height/5
             color: 'transparent'
 
             TitleBar {
                    id: titleBar
                    width: parent.width
                    height: parent.parent.height/10
+
+
             }
 
 //            MenuBar {
@@ -56,21 +55,20 @@ Window {
         Repeater {
             id: repeater
 
-            model: task_manager_model.task_list
+            model: task_manager_model.project.task_list
 
             Task {
                 width: parent.width
                 height: parent.height/10
                 taskModel: modelData
 
-                back_color: background
-                middle_color: middleground
-                fore_color: foreground
-
-
             }
 
         }
 
-	}
+    }
+    Component.onCompleted: {
+        console.log("foo")
+        console.log(task_manager_model.project.task_list)
+    }
 }

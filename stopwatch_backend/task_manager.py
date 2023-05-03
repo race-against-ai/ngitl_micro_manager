@@ -13,51 +13,52 @@ from PySide6.QtGui import QGuiApplication
 from PySide6.QtQml import QQmlApplicationEngine
 
 from task_manager_model import TaskManagerModel, TaskModel
+from settings_model import SettingsManagerModel, SettingsModel
+
 from task import Task
 
 
 class TaskManager:
 
     def __init__(self) -> None:
-        self.task_manager_model = TaskManagerModel()
 
         self.app = QGuiApplication(sys.argv)
         self.engine = QQmlApplicationEngine()
 
-        self.engine.rootContext().setContextProperty("task_manager_model", self.task_manager_model)
-        self.engine.load(os.fspath(Path(__file__).resolve().parent / "../frontend/qml/main.qml"))
+        self.task_manager_model = TaskManagerModel(self.app)
+
+        # self.root_object = self.engine.rootObjects()[0]
 
         with open('settings.json', 'r') as f:
-            tasks: List[Task] = []
+
             file = json.load(f)
-            self.tasks = file["tasks"]
-            for entry in self.tasks:
-                tasks.append(Task(entry))
+            self.log_level = file["log_level"]
+            self.resolution = file["resolution"]
+            self.theme = file["theme"]
+
+            # for entry, key in self.theme.items():
+            #     self.root_object.setProperty(entry, key)
+
+        with open('project.json', 'r') as f:
+            self.tasks: List[Task] = []
+            file = json.load(f)
+
+            tasks = file["tasks"]
+            for entry in tasks:
+                self.tasks.append(Task(entry))
+
+        # self.root_object.setProperty("width", self.resolution[0])
+        # self.root_object.setProperty("height", self.resolution[1])
 
         self._process: Dict[str, subprocess.Popen] = {}
 
-        self.task_manager_model.append_tasks(tasks)
+        self.task_manager_model.project.append_tasks(self.tasks)
+        self.engine.rootContext().setContextProperty("task_manager_model", self.task_manager_model)
+
+        self.engine.load(os.fspath(Path(__file__).resolve().parent / "../frontend/qml/main.qml"))
 
     def handle_open_log_request(self) -> None:
         print("foo")
-
-    def run_process(self, name: str, path: str, file: str, delay: float) -> None:
-        """Run the wanted executable and set its delay after startup"""
-        self._process[name] = subprocess.Popen(rf'{path}\{file}',
-                                   cwd=path,
-                                   creationflags=subprocess.CREATE_NEW_CONSOLE)
-                                   # stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-
-        time.sleep(delay)
-
-    def kill_process(self, name: str) -> None:
-        """Forcefully closes the Task"""
-        if name in self._process:
-            # self._process[name].terminate()
-            subprocess.call(['taskkill', '/F', '/T', '/PID]', str(self._process[name].pid)])
-            self._process.pop(name)
-        else:
-            print(f"Process with the ID: {name} isn't Running")
 
     def run(self) -> None:
         if not self.engine.rootObjects():

@@ -1,64 +1,12 @@
 {
-    "resolution": [800, 600],
-
-    "theme" : "dark",
-
-    "log_level" : "INFO",
-
-    "tasks": [
-        {
-            "name": "Image Broker",
-            "enabled": false,
-            "executable": "not implemented",
-            "delay": 1,
-            "working_directory": "not implemented",
-            "config_file": "Insert Directory",
-            "log_level": "INFO"
-        },
-        {
-            "name": "Visualization",
-            "enabled": false,
-            "executable": "not implemented",
-            "delay": 2,
-            "working_directory": "not implemented",
-            "config_file": "Insert Directory",
-            "log_level": "INFO"
-        },
-        {
-            "name": "Camera",
-            "enabled": false,
-            "executable": "not implemented",
-            "delay": 5,
-            "working_directory": "not implemented",
-            "config_file": "Insert Directory",
-            "log_level": "INFO"
-        },
-        {
-            "name": "Interface",
-            "enabled": false,
-            "executable": "not implemented",
-            "delay": 5,
-            "working_directory": "not implemented",
-            "config_file": "Insert Directory",
-            "log_level": "INFO"
-        },
-        {
-            "name": "Control Panel",
-            "enabled": false,
-            "executable": "not implemented",
-            "delay": 5,
-            "working_directory": "not implemented",
-            "config_file": "Insert Directory",
-            "log_level": "INFO"
-        },
-        {
-            "name": "Test Source",
-            "enabled": false,
-            "executable": "not implemented",
-            "delay": 5,
-            "working_directory": "not implemented",
-            "config_file": "Insert Directory",
-            "log_level": "INFO"
-        }
-    ]
+  "resolution": [
+    800,
+    600
+  ],
+  "theme": {
+    "primary_color": "#262b33",
+    "secondary_color": "#2f343f",
+    "tertiary_color": "#4c5e7c"
+  },
+  "log_level": "INFO"
 }

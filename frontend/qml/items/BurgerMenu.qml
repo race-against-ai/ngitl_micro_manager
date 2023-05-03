@@ -7,6 +7,9 @@ Item {
     width: parent.width
     height: parent.height
 
+    property var settingsModel
+    settingsModel: window.settingsModel
+
     // Burger menu button
     Rectangle {
         id: burgerButton
@@ -34,14 +37,16 @@ Item {
         }
     }
 
+    // The Actual Burger Menu
     Rectangle{
 
         id: burgerRect
         visible: false
         width: window.width - 800 / 3
         height: window.height - window.height/10
-        z:10
+
         color: 'transparent'
+
 
 
         Menu {
@@ -55,12 +60,18 @@ Item {
 
             background: Rectangle{
 
-                color: "#262b33"
+                color: window.primary_color
+
                 height: parent.height
                 width: parent.width
                 border.width: 2
-                border.color: '#2f343f'
+                border.color: window.secondary_color
 
+            }
+            Behavior on x {
+                NumberAnimation {
+                    duration: 250
+                }
             }
 
             MenuItem{
@@ -81,8 +92,7 @@ Item {
                     MouseArea {
                         anchors.fill: parent
                         onClicked: {
-                                var parentFolderUrl = Qt.resolvedUrl("..").toString();
-                                Qt.desktopServices.openUrl(parentFolderUrl);
+                                settingsModel.open_folder_request()
                             }
                     }
 
@@ -108,8 +118,6 @@ Item {
                     height: 50
                     width: parent.width - 6
                     buttonText: "Downloader"
-
-
             }
 
 
