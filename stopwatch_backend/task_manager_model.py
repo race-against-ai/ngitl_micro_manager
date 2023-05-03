@@ -6,6 +6,7 @@ import platform
 import subprocess
 # from task import Task
 import time
+from pathlib import Path
 from typing import List
 
 from PySide6.QtCore import QObject, Signal, Property
@@ -94,7 +95,7 @@ class TaskModel(QObject):
         """Run the wanted executable and set its delay after startup"""
 
         self.process = run_process(self._name,
-                                   r"C:\Users\VW2SMDW\Repos\ngitl_micro_manager\stopwatch_backend",
+                                   Path(__file__).parent,
                                    "python while_true.py",
                                    0)
 
@@ -128,11 +129,11 @@ class TaskManagerModel(QObject):
         self._project = ProjectModel(self)
         self._settings = SettingsModel(self)
 
-    @Property("QObject", notify=settings_changed)
+    @Property("QVariant", notify=settings_changed)
     def settings(self):
         return self._settings
 
-    @Property("QObject", notify=project_changed)
+    @Property("QVariant", notify=project_changed)
     def project(self):
         return self._project
 
@@ -157,9 +158,24 @@ class SettingsModel(QObject):
 class ProjectModel(QObject):
     task_list_changed = Signal(name="task_list_changed")
 
+    start_all_tasks_triggered = Signal(name="start_all_tasks_triggered")
+    stop_all_tasks_triggered = Signal(name="stop_all_tasks_triggered")
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self._task_list: List[TaskModel] = []
+        self.start_all_tasks_triggered.connect(self.handle_start_all_tasks_triggered)
+        self.stop_all_tasks_triggered.connect(self.handle_stop_all_tasks_triggered)
+
+    def handle_start_all_tasks_triggered(self) -> None:
+        for task in self.task_list:
+            print(task.name)
+            task.run_process()
+
+    def handle_stop_all_tasks_triggered(self) -> None:
+        for task in self.task_list:
+            print(task.name)
+            task.terminate_process()
 
     @Property("QVariantList", notify=task_list_changed)
     def task_list(self):

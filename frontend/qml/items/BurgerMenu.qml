@@ -106,7 +106,7 @@ Item {
 
                     MouseArea {
                         anchors.fill: parent
-                        onClicked: {
+                        onClicked: function(mouse) {
                             mouse.accepted = true
                             settings_menu.visible = !settings_menu.visible;
                         }

@@ -16,7 +16,7 @@ Rectangle{
     BurgerMenu{
         width: parent.width
         height: parent.height
-        settingsModel: settingsModel
+        settingsModel: task_manager_model.settings
     }
 
     Rectangle{
@@ -63,6 +63,14 @@ Rectangle{
 
                 height: command.height/2
                 width: command.width/8
+
+                onSwitchOnChanged: {
+                    if (switchOn) {
+                        task_manager_model.project.start_all_tasks_triggered()
+                    } else {
+                        task_manager_model.project.stop_all_tasks_triggered()
+                    }
+                }
             }
 
 

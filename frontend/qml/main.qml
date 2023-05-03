@@ -49,6 +49,8 @@ Window {
 //                    height: parent.parent.height/20
 //            }
 
+
+
         }
 
 
@@ -67,8 +69,10 @@ Window {
         }
 
     }
+
     Component.onCompleted: {
-        console.log("foo")
-        console.log(task_manager_model.project.task_list)
+        console.debug("foo")
+       console.log(task_manager_model.project.task_list)
     }
+
 }

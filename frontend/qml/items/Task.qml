@@ -9,7 +9,8 @@ Rectangle {
     property var taskModel
 
 //    width: parent.width
-    width: burgerMenu.visible ? (parent.width - burgerMenu.width) : taskWidth
+//    width: burgerMenu.visible ? (parent.width - burgerMenu.width) : taskWidth
+    width: parent.width
     height: parent.height
 
     color: window.secondary_color
@@ -123,7 +124,7 @@ Rectangle {
 
             Layout.alignment: Qt.AlignVCenter
             ontext: "Running"
-            offtext: "Stopped"
+            offtext: "Stopped2"
 
 
             oncolor: window.tertiary_color
