@@ -7,6 +7,9 @@ Item {
     width: parent.width
     height: parent.height
 
+    property var settingsModel
+    settingsModel: window.settingsModel
+
     // Burger menu button
     Rectangle {
         id: burgerButton
@@ -34,14 +37,16 @@ Item {
         }
     }
 
+    // The Actual Burger Menu
     Rectangle{
 
         id: burgerRect
         visible: false
         width: window.width - 800 / 3
         height: window.height - window.height/10
-        z:10
+
         color: 'transparent'
+
 
 
         Menu {
@@ -55,11 +60,12 @@ Item {
 
             background: Rectangle{
 
-                color: "#262b33"
+                color: window.primary_color
+
                 height: parent.height
                 width: parent.width
                 border.width: 2
-                border.color: '#2f343f'
+                border.color: window.secondary_color
 
             }
 
@@ -80,9 +86,9 @@ Item {
 
                     MouseArea {
                         anchors.fill: parent
-                        onClicked: {
-                                var parentFolderUrl = Qt.resolvedUrl("..").toString();
-                                Qt.desktopServices.openUrl(parentFolderUrl);
+                        onClicked: function(mouse) {
+                                mouse.accepted = true
+                                task_manager_model.settings.open_folder_request()
                             }
                     }
 
@@ -96,7 +102,7 @@ Item {
 
                     MouseArea {
                         anchors.fill: parent
-                        onClicked: {
+                        onClicked: function(mouse) {
                             mouse.accepted = true
                             settings_menu.visible = !settings_menu.visible;
                         }
@@ -109,7 +115,13 @@ Item {
                     width: parent.width - 6
                     buttonText: "Downloader"
 
-
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: function(mouse) {
+                            mouse.accepted = true
+                            task_manager_model.project.download_request()
+                        }
+                    }
             }
 
 

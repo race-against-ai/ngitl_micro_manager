@@ -1,0 +1,33 @@
+{
+  "autostart": true,
+
+  "tasks": [
+    {
+      "name": "Task 1",
+      "executable": "C:\\foo\\bar\\binary.exe",
+      "delay": 0,
+      "working_directory": "C:\\working\\dir",
+      "config_file": "C:\\path\\to\\config.json",
+      "log_level": "INFO"
+    },
+    {
+      "name": "Task 2",
+      "enabled": false,
+      "executable": "C:\\foo\\ba2r\\binary2.exe",
+      "delay": 5,
+      "working_directory": "C:\\working\\dir2",
+      "config_file": "C:\\path\\to\\config.json",
+      "log_level": "INFO"
+    },
+    {
+      "name": "Task 3",
+      "executable": "C:\\foo\\ba2r\\binary3.exe",
+      "delay": 5,
+      "working_directory": "C:\\working\\dir2",
+      "config_file": "C:\\path\\to\\config.json",
+      "log_level": "INFO"
+    }
+  ]
+
+
+}

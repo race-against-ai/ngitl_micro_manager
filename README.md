@@ -1,10 +1,8 @@
-# Stopwatch
+# NGITL Micromanager
 
-Simple stopwatch based on PySide6 with QML. The whole design is based on a svg vector graphic
-that is organized in multiple layers. These layers are extracted and saved in separate files.
-In QML these layers are stacked and animated to create the result below.
+The NGITL MicroManager meant to help starting and Managing different Projects.
+Usage includes Component managing so you're able to let only the components you need to run and replace existing components with your own that you're currently working on
 
-[![Video](frontend/images/svg/stopwatch.svg)](doc/demo.mp4)
 
 ## Setup environment
 

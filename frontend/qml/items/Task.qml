@@ -8,15 +8,12 @@ Rectangle {
 
     property var taskModel
 
-    property color back_color: "#262b33" // background
-    property color middle_color: "#2f343f" // complementary to the background
-    property color fore_color: '#4c5e7c' // foreground
+    property color state_color: "red"
 
-//    width: parent.width
-    width: burgerMenu.visible ? (parent.width - burgerMenu.width) : taskWidth
+    width: parent.width
     height: parent.height
 
-    color: middleground
+    color: window.secondary_color
     border.width: 0
     radius: 20
 
@@ -32,17 +29,13 @@ Rectangle {
             Layout.alignment: Qt.AlignVCenter
 
             color: 'transparent'
-//            color: 'blue'
 
-            height: parent.height * 0.9
-            width: parent.width/8
+            height: task.height * 0.9
+            width: task.width/8
             Layout.leftMargin: height/6
-
-//            radius: height/3
 
             Text {
 
-//                Layout.alignment: Qt.AlignVCenter
                 Layout.maximumWidth: 400
 
                 wrapMode: Text.Wrap
@@ -51,68 +44,62 @@ Rectangle {
                 font.pixelSize: parent.height/3
 
                 text: taskModel.name
-                color: "white"
+                color: window.lightFontColor
             }
         }
 
 
         Column {
 
+            id: button_column
+
             Layout.alignment: Qt.AlignVCenter
 
-            height: parent.parent.parent.height
-            width: parent.parent.width/16
-            spacing: parent.parent.height/18
+            height: task.height
+            width: task.width/16
+            spacing: height/18
 
-            Button {
-                id: log_button
-                text: "Log"
-                Layout.fillHeight: true
-                background: Rectangle{
-                    color: foreground
-                    width: parent.parent.width
-                    height: parent.parent.height/2.5
-                    radius: 3
+            ButtonTemp{
 
+                width: button_column.width
+                height: task.height/2.5
 
-                }
-
+                buttonText: "Log"
                 onClicked: {
                     taskModel.open_log_request()
                 }
             }
 
-            Button {
-                id: config_button
-                text: "Config"
-                Layout.fillHeight: true
-                background: Rectangle{
-                    color: foreground
-                    width: parent.parent.width
-                    height: parent.parent.height/2.5
-                    radius: 3
+            ButtonTemp {
 
-                }
+                width: button_column.width
+                height: task.height/2.5
 
+                buttonText: "Config"
                 onClicked: taskModel.open_config_request()
             }
         }
 
-        Switch {
+        CuSwitch{
+            id: run_switch
 
-            width: parent.width * 0.2
-            height: parent.parent.parent.height/10
+            width: task.width/10
+            height: task.height/2.5
 
             Layout.alignment: Qt.AlignVCenter
-            text: visualPosition == 1.0 ? "Running" : "Stopped"
-            onClicked: {
-                if (visualPosition == 1.0){
+            ontext: "Running"
+            offtext: "Stopped"
+
+
+            oncolor: window.tertiary_color
+
+            onSwitchOnChanged: {
+                if (switchOn) {
                     taskModel.run_exe_request()
-                    state_visualizer_rectangle.color = 'green'
-                }
-                if (visualPosition == 0.0){
+//                    state_visualizer_rectangle.color = 'green'
+                } else {
                     taskModel.close_exe_request()
-                    state_visualizer_rectangle.color = 'red'
+//                    state_visualizer_rectangle.color = 'red'
                 }
             }
 
@@ -123,21 +110,13 @@ Rectangle {
 
             Layout.alignment: Qt.AlignVCenter
 
-            color: "red"
+            color: taskModel.state_color
 
             height: parent.height/8
             width: height
 
             radius: height
 
-//            Text {
-//                id: status
-//                text: qsTr("Closed")
-////                font.pointSize: Math.min(width * 0.5, height * 0.5)
-//                wrapMode:  Text.Wrap
-//                textFormat:  Text.PlainText
-//                anchors.centerIn: parent
-//            }
         }
 
     }

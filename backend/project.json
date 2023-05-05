@@ -1,9 +1,6 @@
 {
-    "resolution": [800, 600],
 
-    "theme" : "dark",
-
-    "log_level" : "INFO",
+    "title" : "Race Against AI",
 
     "tasks": [
         {
@@ -13,7 +10,18 @@
             "delay": 1,
             "working_directory": "not implemented",
             "config_file": "Insert Directory",
-            "log_level": "INFO"
+            "log_level": "INFO",
+            "autostart": true
+        },
+        {
+            "name": "Camera",
+            "enabled": false,
+            "executable": "not implemented",
+            "delay": 2,
+            "working_directory": "not implemented",
+            "config_file": "Insert Directory",
+            "log_level": "INFO",
+            "autostart": true
         },
         {
             "name": "Visualization",
@@ -22,16 +30,8 @@
             "delay": 2,
             "working_directory": "not implemented",
             "config_file": "Insert Directory",
-            "log_level": "INFO"
-        },
-        {
-            "name": "Camera",
-            "enabled": false,
-            "executable": "not implemented",
-            "delay": 5,
-            "working_directory": "not implemented",
-            "config_file": "Insert Directory",
-            "log_level": "INFO"
+            "log_level": "INFO",
+            "autostart": true
         },
         {
             "name": "Interface",
@@ -40,7 +40,8 @@
             "delay": 5,
             "working_directory": "not implemented",
             "config_file": "Insert Directory",
-            "log_level": "INFO"
+            "log_level": "INFO",
+            "autostart": true
         },
         {
             "name": "Control Panel",
@@ -49,7 +50,8 @@
             "delay": 5,
             "working_directory": "not implemented",
             "config_file": "Insert Directory",
-            "log_level": "INFO"
+            "log_level": "INFO",
+            "autostart": true
         },
         {
             "name": "Test Source",
@@ -58,7 +60,8 @@
             "delay": 5,
             "working_directory": "not implemented",
             "config_file": "Insert Directory",
-            "log_level": "INFO"
+            "log_level": "INFO",
+            "autostart": false
         }
     ]
 }
