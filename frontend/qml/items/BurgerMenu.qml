@@ -68,11 +68,6 @@ Item {
                 border.color: window.secondary_color
 
             }
-            Behavior on x {
-                NumberAnimation {
-                    duration: 250
-                }
-            }
 
             MenuItem{
                 enabled: false
@@ -91,8 +86,9 @@ Item {
 
                     MouseArea {
                         anchors.fill: parent
-                        onClicked: {
-                                settingsModel.open_folder_request()
+                        onClicked: function(mouse) {
+                                mouse.accepted = true
+                                task_manager_model.settings.open_folder_request()
                             }
                     }
 
@@ -118,6 +114,14 @@ Item {
                     height: 50
                     width: parent.width - 6
                     buttonText: "Downloader"
+
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: function(mouse) {
+                            mouse.accepted = true
+                            task_manager_model.project.download_request()
+                        }
+                    }
             }
 
 

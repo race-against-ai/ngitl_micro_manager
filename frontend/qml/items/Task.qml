@@ -8,8 +8,8 @@ Rectangle {
 
     property var taskModel
 
-//    width: parent.width
-//    width: burgerMenu.visible ? (parent.width - burgerMenu.width) : taskWidth
+    property color state_color: "red"
+
     width: parent.width
     height: parent.height
 
@@ -29,17 +29,13 @@ Rectangle {
             Layout.alignment: Qt.AlignVCenter
 
             color: 'transparent'
-//            color: 'blue'
 
-            height: parent.height * 0.9
-            width: parent.width/8
+            height: task.height * 0.9
+            width: task.width/8
             Layout.leftMargin: height/6
-
-//            radius: height/3
 
             Text {
 
-//                Layout.alignment: Qt.AlignVCenter
                 Layout.maximumWidth: 400
 
                 wrapMode: Text.Wrap
@@ -55,94 +51,56 @@ Rectangle {
 
         Column {
 
+            id: button_column
+
             Layout.alignment: Qt.AlignVCenter
 
-            height: parent.parent.parent.height
-            width: parent.parent.width/16
-            spacing: parent.parent.height/18
+            height: task.height
+            width: task.width/16
+            spacing: height/18
 
-            Button {
-                id: log_button
-                text: "Log"
-                Layout.fillHeight: true
-                background: Rectangle{
-                    color: window.tertiary_color
-                    width: parent.parent.width
-                    height: parent.parent.height/2.5
-                    radius: 3
+            ButtonTemp{
 
+                width: button_column.width
+                height: task.height/2.5
 
-                }
-
+                buttonText: "Log"
                 onClicked: {
                     taskModel.open_log_request()
                 }
             }
 
-            Button {
-                id: config_button
-                text: "Config"
-                Layout.fillHeight: true
-                background: Rectangle{
-                    color: window.tertiary_color
-                    width: parent.parent.width
-                    height: parent.parent.height/2.5
-                    radius: 3
+            ButtonTemp {
 
-                }
+                width: button_column.width
+                height: task.height/2.5
 
+                buttonText: "Config"
                 onClicked: taskModel.open_config_request()
             }
         }
 
-//        Switch {
-
-//            width: parent.width * 0.2
-//            height: parent.parent.parent.height/10
-
-//            Layout.alignment: Qt.AlignVCenter
-//            text: visualPosition == 1.0 ? "Running" : "Stopped"
-
-//            onClicked: {
-//                if (visualPosition == 1.0){
-//                    taskModel.run_exe_request()
-//                    state_visualizer_rectangle.color = 'green'
-//                }
-//                if (visualPosition == 0.0){
-//                    taskModel.close_exe_request()
-//                    state_visualizer_rectangle.color = 'red'
-//                }
-//            }
-
-//        }
-
         CuSwitch{
             id: run_switch
 
-            width: parent.width/10
-            height: parent.parent.height/2.5
+            width: task.width/10
+            height: task.height/2.5
 
             Layout.alignment: Qt.AlignVCenter
             ontext: "Running"
-            offtext: "Stopped2"
+            offtext: "Stopped"
 
 
             oncolor: window.tertiary_color
 
-            MouseArea{
-                anchors.fill: parent
-                onClicked: {
-                                run_switch.switchOn = !run_switch.switchOn
-
-                                if (run_switch.switchOn){
-                                    taskModel.run_exe_request()
-                                    state_visualizer_rectangle.color = 'green'
-                                }
-                                if (!run_switch.switchOn){
-                                    taskModel.close_exe_request()
-                                    state_visualizer_rectangle.color = 'red'
-                                }
-                            }
+            onSwitchOnChanged: {
+                if (switchOn) {
+                    taskModel.run_exe_request()
+//                    state_visualizer_rectangle.color = 'green'
+                } else {
+                    taskModel.close_exe_request()
+//                    state_visualizer_rectangle.color = 'red'
+                }
             }
 
         }
@@ -152,21 +110,13 @@ Rectangle {
 
             Layout.alignment: Qt.AlignVCenter
 
-            color: "red"
+            color: taskModel.state_color
 
             height: parent.height/8
             width: height
 
             radius: height
 
-//            Text {
-//                id: status
-//                text: qsTr("Closed")
-////                font.pointSize: Math.min(width * 0.5, height * 0.5)
-//                wrapMode:  Text.Wrap
-//                textFormat:  Text.PlainText
-//                anchors.centerIn: parent
-//            }
         }
 
     }

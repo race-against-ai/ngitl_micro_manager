@@ -14,7 +14,7 @@ MenuItem {
         background: Rectangle{
             anchors.horizontalCenter: parent.horizontalCenter
             color: window.tertiary_color
-//            color: Props.fore_color
+
             width: parent.width - 5
             height: parent.height - 5
             radius: 3

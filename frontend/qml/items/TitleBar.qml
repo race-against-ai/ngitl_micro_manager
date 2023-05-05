@@ -5,9 +5,6 @@ import QtQuick.Layouts 1.15
 Rectangle{
     id: title_bar
 
-    property var settingsModel
-
-
     width: parent.width
     height: parent.height
 
@@ -28,12 +25,12 @@ Rectangle{
 
         Text {
             id: title
-            text: qsTr("NGITL MicroManager")
+            text: window.titleText
             color: window.lightFontColor
             font.pointSize: Math.min(parent.height/2, (parent.width - height/3) * 0.05)
             leftPadding: height/6
             wrapMode: Text.Wrap
-            width: parent.width - logo.width - height/3
+            width: parent.width - BurgerMenu.burgerButton.width - height/3
 
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: parent.left
@@ -55,7 +52,8 @@ Rectangle{
 
 
             CuSwitch{
-                x: 12
+                id: start_all
+                x: command.height/4
                 anchors.verticalCenter: parent.verticalCenter
 
                 offtext: "Start all"
@@ -66,15 +64,37 @@ Rectangle{
 
                 onSwitchOnChanged: {
                     if (switchOn) {
-                        task_manager_model.project.start_all_tasks_triggered()
+                        task_manager_model.project.start_all_tasks_request()
                     } else {
-                        task_manager_model.project.stop_all_tasks_triggered()
+                        task_manager_model.project.stop_all_tasks_request()
                     }
+                }
+            }
+
+            ButtonTemp{
+                id: project_change
+                anchors.verticalCenter: parent.verticalCenter
+
+                buttonText: "Change Project"
+
+                height: command.height/2
+                width: command.width/8
+
+                x: command.width - width - command.height/4
+
+                onClicked: {
+                    task_manager_model.settings.project_change_request()
                 }
             }
 
 
         }
 
+     DescriptionBar{
+         width: parent.width
+         height: parent.height * 0.7
+         y: upper_part.height + command.y - 12
+
+     }
 
 }

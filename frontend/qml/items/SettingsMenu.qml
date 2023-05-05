@@ -35,6 +35,14 @@ Menu {
             width: parent.width-6
             buttonText: "Theme"
 
+            MouseArea {
+                anchors.fill: parent
+                onClicked: function(mouse) {
+                    mouse.accepted = true
+                    task_manager_model.settings.theme_change_request()
+                }
+            }
+
     }
 
 

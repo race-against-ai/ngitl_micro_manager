@@ -14,7 +14,6 @@ from PySide6.QtGui import QGuiApplication
 from PySide6.QtQml import QQmlApplicationEngine
 
 from task_manager_model import TaskManagerModel, TaskModel
-from settings_model import SettingsManagerModel, SettingsModel
 
 from task import Task
 
@@ -30,7 +29,6 @@ class TaskManager:
 
         self.engine.rootContext().setContextProperty("task_manager_model", self.task_manager_model)
         self.engine.load(os.fspath(Path(__file__).resolve().parent / "../frontend/qml/main.qml"))
-
 
         self.root_object = self.engine.rootObjects()[0]
 
@@ -48,6 +46,10 @@ class TaskManager:
             self.tasks: List[Task] = []
             file = json.load(f)
 
+            if "title" in file:
+                title = file["title"]
+                self.root_object.setProperty("titleText", title)
+
             tasks = file["tasks"]
             for entry in tasks:
                 self.tasks.append(Task(entry))
@@ -58,12 +60,6 @@ class TaskManager:
         self._process: Dict[str, subprocess.Popen] = {}
 
         self.task_manager_model.project.append_tasks(self.tasks)
-
-
-
-
-    def handle_open_log_request(self) -> None:
-        print("foo")
 
     def run(self) -> None:
         if not self.engine.rootObjects():

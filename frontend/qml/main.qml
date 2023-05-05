@@ -11,16 +11,19 @@ Window {
     width: 800
     height: 600
 
-    minimumWidth: 800
-    minimumHeight: 600
-    visible: true
-    title: qsTr("NGITL MicroManager")
+    property string titleText: "NGITL MicroManager"
 
     property color primary_color: "#262b33" // background
     property color secondary_color: "#2f343f" // complementary to the background
     property color tertiary_color: '#4c5e7c' // foreground
 
     property color lightFontColor: '#F4EEE0' // Kinda white but not really
+
+    minimumWidth: 800
+    minimumHeight: 600
+    visible: true
+    title: qsTr("NGITL MicroManager")
+
 
     color: primary_color
 
@@ -32,25 +35,14 @@ Window {
 
         Rectangle {
             width: parent.width
-            height: parent.height/5
+            height: parent.height/3.8
             color: 'transparent'
 
             TitleBar {
                    id: titleBar
                    width: parent.width
                    height: parent.parent.height/10
-
-
             }
-
-//            MenuBar {
-//                    y: parent.parent.height/10
-//                    width: parent.width
-//                    height: parent.parent.height/20
-//            }
-
-
-
         }
 
 
