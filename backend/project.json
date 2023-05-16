@@ -5,17 +5,15 @@
     "tasks": [
         {
             "name": "Image Broker",
-            "enabled": false,
-            "executable": "not implemented",
+            "executable": "start_live_image_broker.bat",
             "delay": 1,
-            "working_directory": "not implemented",
+            "working_directory": "C:\\Users\\VW2SMDW\\race_against_ai\\software",
             "config_file": "Insert Directory",
             "log_level": "INFO",
             "autostart": true
         },
         {
             "name": "Camera",
-            "enabled": false,
             "executable": "not implemented",
             "delay": 2,
             "working_directory": "not implemented",
@@ -25,17 +23,15 @@
         },
         {
             "name": "Visualization",
-            "enabled": false,
-            "executable": "not implemented",
+            "executable": "start_live_visualization.bat",
             "delay": 2,
-            "working_directory": "not implemented",
+            "working_directory": "C:\\Users\\VW2SMDW\\race_against_ai\\software",
             "config_file": "Insert Directory",
             "log_level": "INFO",
             "autostart": true
         },
         {
             "name": "Interface",
-            "enabled": false,
             "executable": "not implemented",
             "delay": 5,
             "working_directory": "not implemented",
@@ -45,7 +41,6 @@
         },
         {
             "name": "Control Panel",
-            "enabled": false,
             "executable": "not implemented",
             "delay": 5,
             "working_directory": "not implemented",
@@ -55,10 +50,9 @@
         },
         {
             "name": "Test Source",
-            "enabled": false,
-            "executable": "not implemented",
+            "executable": "start_live_image_test_source.bat",
             "delay": 5,
-            "working_directory": "not implemented",
+            "working_directory": "C:\\Users\\VW2SMDW\\race_against_ai\\software",
             "config_file": "Insert Directory",
             "log_level": "INFO",
             "autostart": false

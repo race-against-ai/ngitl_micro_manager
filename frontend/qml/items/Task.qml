@@ -9,9 +9,10 @@ Rectangle {
     property var taskModel
 
     property color state_color: "red"
+    property bool switch_state: false
 
     width: parent.width
-    height: parent.height
+    height: width/14
 
     color: window.secondary_color
     border.width: 0
@@ -48,7 +49,6 @@ Rectangle {
             }
         }
 
-
         Column {
 
             id: button_column
@@ -56,12 +56,12 @@ Rectangle {
             Layout.alignment: Qt.AlignVCenter
 
             height: task.height
-            width: task.width/16
+            width: window.width/8
             spacing: height/18
 
             ButtonTemp{
 
-                width: button_column.width
+                width: window.width/8
                 height: task.height/2.5
 
                 buttonText: "Log"
@@ -72,7 +72,7 @@ Rectangle {
 
             ButtonTemp {
 
-                width: button_column.width
+                width: window.width/8
                 height: task.height/2.5
 
                 buttonText: "Config"
@@ -90,17 +90,23 @@ Rectangle {
             ontext: "Running"
             offtext: "Stopped"
 
-
             oncolor: window.tertiary_color
 
             onSwitchOnChanged: {
                 if (switchOn) {
+                    switchOn = true
                     taskModel.run_exe_request()
-//                    state_visualizer_rectangle.color = 'green'
+
                 } else {
-                    taskModel.close_exe_request()
-//                    state_visualizer_rectangle.color = 'red'
+                    switchOn = false
+                    taskModel.kill_exe_request()
+
                 }
+
+            }
+
+            Component.onCompleted: {
+                switchOn = switch_stage
             }
 
         }

@@ -27,7 +27,7 @@ Rectangle{
             id: title
             text: window.titleText
             color: window.lightFontColor
-            font.pointSize: Math.min(parent.height/2, (parent.width - height/3) * 0.05)
+            font.pointSize: parent.height/2
             leftPadding: height/6
             wrapMode: Text.Wrap
             width: parent.width - BurgerMenu.burgerButton.width - height/3

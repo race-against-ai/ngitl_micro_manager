@@ -8,5 +8,7 @@
     "secondary_color": "#2f343f",
     "tertiary_color": "#4c5e7c"
   },
-  "log_level": "INFO"
+  "log_level": "INFO",
+
+  "dev_mode": false
 }

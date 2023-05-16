@@ -1,8 +1,9 @@
 # NGITL Micromanager
 
 The NGITL MicroManager meant to help starting and Managing different Projects.
-Usage includes Component managing so you're able to let only the components you need to run and replace existing components with your own that you're currently working on
+Usage includes Component managing, so you're able to let only the components you need to run and replace existing components with your own that you're currently working on
 
+It also includes a Project Creator in its settings window, to set up another project instead of the standard one
 
 ## Setup environment
 

@@ -2,6 +2,7 @@ import QtQuick 2.0
 import QtQuick.Controls 2.5
 import QtQuick.Layouts 1.3
 
+
 Item {
     id: root
     width: parent.width
@@ -22,9 +23,19 @@ Item {
         // Burger icon
         Image {
             id: logo
-            source: "../../images/logo_ngitl.svg"
-            anchors.fill: parent
+            source: {if (!window.devMode){
+                    "../../images/logo_ngitl.svg"
+                             }
+                 else{
+                 "../../images/logo_dev_ngitl.svg"
+             }
+
+         }
+            height: parent.height/1.2
             fillMode: Image.PreserveAspectFit
+            anchors.right: parent.right
+            anchors.rightMargin: 5
+            anchors.verticalCenter: parent.verticalCenter
                 }
 
         MouseArea {
@@ -80,58 +91,51 @@ Item {
 
             // Menu items
             BurgerButton{
-                    height: 50
-                    width: parent.width-6
-                    buttonText: "Open Folder"
+                height: 50
+                width: parent.width-6
+                buttonText: "   Open Folder"
 
-                    MouseArea {
-                        anchors.fill: parent
-                        onClicked: function(mouse) {
-                                mouse.accepted = true
-                                task_manager_model.settings.open_folder_request()
-                            }
-                    }
-
-            }
-
-
-            BurgerButton{
-                    height: 50
-                    width: parent.width - 6
-                    buttonText: "< Settings"
-
-                    MouseArea {
-                        anchors.fill: parent
-                        onClicked: function(mouse) {
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: function(mouse) {
                             mouse.accepted = true
-                            settings_menu.visible = !settings_menu.visible;
+                            task_manager_model.settings.open_folder_request()
                         }
-                    }
+                }
 
             }
 
             BurgerButton{
-                    height: 50
-                    width: parent.width - 6
-                    buttonText: "Downloader"
+                height: 50
+                width: parent.width-6
+                buttonText: "   Settings"
 
-                    MouseArea {
-                        anchors.fill: parent
-                        onClicked: function(mouse) {
-                            mouse.accepted = true
-                            task_manager_model.project.download_request()
-                        }
+                MouseArea{
+                    anchors.fill: parent
+                    onClicked: function(mouse) {
+                        var component = Qt.createComponent("SettingsWin.qml");
+                        var newWindow = component.createObject(window);
+                        newWindow.show();
                     }
+                }
             }
 
 
-        }
+            BurgerButton{
+                height: 50
+                width: parent.width - 6
+                buttonText: "   Downloader"
 
-        SettingsMenu{
-            id: settings_menu
-            visible: false
-            height: parent.height
-            y: window.height/10
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: function(mouse) {
+                        mouse.accepted = true
+                        task_manager_model.project.download_request()
+                    }
+                }
+            }
+
+
         }
 
         MouseArea {

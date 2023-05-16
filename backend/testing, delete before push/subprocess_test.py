@@ -7,14 +7,14 @@ from time import sleep
 
 filepath = r'C:\Users\VW2SMDW\Repos\race_against_ai\software'
 
-# file_list = ["start_live_image_broker.bat", "start_live_image_test_source.bat", "start_live_visualization.bat"]
+file_list = ["start_live_image_broker.bat", "start_live_image_test_source.bat", "start_live_visualization.bat"]
 proc_dict: (str, subprocess) = {}
-file_list = [r'python C:\Users\VW2SMDW\Repos\ngitl_micro_manager\stopwatch_backend\while_true.py']
+# file_list = [r'python C:\Users\VW2SMDW\Repos\ngitl_micro_manager\backend\while_true.py']
 delay = 3
 for object in file_list:
 
     proc_dict[object] = subprocess.Popen(f"{object}",
-                                         cwd=r"C:\Users\VW2SMDW\Repos\ngitl_micro_manager\stopwatch_backend",
+                                         cwd=f'{filepath}',
                                          creationflags=subprocess.CREATE_NEW_CONSOLE)
     # The Bat window has been hidden, you can read the output or the errors like this
     # output, errors = p.communicate()

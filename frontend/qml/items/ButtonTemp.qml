@@ -5,6 +5,7 @@ import QtQuick.Layouts 1.15
 Button {
 
     property string buttonText: ""
+    property color bcolor: window.tertiary_color
 
     text: buttonText
 
@@ -12,7 +13,7 @@ Button {
     width: parent.width
 
     background: Rectangle{
-        color: window.tertiary_color
+        color: bcolor
         width: parent.width
         height: parent.height
         radius: 3

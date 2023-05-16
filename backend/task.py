@@ -20,8 +20,5 @@ class Task(QObject):
 
         self.process = None
 
-        # from the config file, checks if autostart is enabled for this task
-        self.autostart = task['enabled']
-
         # Flag to check if the Executable is running or not
         self.status = False
