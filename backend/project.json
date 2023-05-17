@@ -14,10 +14,10 @@
         },
         {
             "name": "Camera",
-            "executable": "not implemented",
+            "executable": "None",
             "delay": 2,
             "working_directory": "not implemented",
-            "config_file": "Insert Directory",
+            "config_file": "None",
             "log_level": "INFO",
             "autostart": true
         },
@@ -26,25 +26,25 @@
             "executable": "start_live_visualization.bat",
             "delay": 2,
             "working_directory": "C:\\Users\\VW2SMDW\\race_against_ai\\software",
-            "config_file": "Insert Directory",
+            "config_file": "None",
             "log_level": "INFO",
             "autostart": true
         },
         {
             "name": "Interface",
-            "executable": "not implemented",
+            "executable": "None",
             "delay": 5,
             "working_directory": "not implemented",
-            "config_file": "Insert Directory",
+            "config_file": "None",
             "log_level": "INFO",
             "autostart": true
         },
         {
             "name": "Control Panel",
-            "executable": "not implemented",
+            "executable": "None",
             "delay": 5,
             "working_directory": "not implemented",
-            "config_file": "Insert Directory",
+            "config_file": "None",
             "log_level": "INFO",
             "autostart": true
         },
@@ -53,7 +53,7 @@
             "executable": "start_live_image_test_source.bat",
             "delay": 5,
             "working_directory": "C:\\Users\\VW2SMDW\\race_against_ai\\software",
-            "config_file": "Insert Directory",
+            "config_file": "None",
             "log_level": "INFO",
             "autostart": false
         }

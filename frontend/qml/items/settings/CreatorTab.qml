@@ -10,16 +10,17 @@ Rectangle{
 
     property int numRows: 1
     property int number: numRows
-    property var taskNames: [ "Task 1" ]
-    property var taskDelays: [0]
-    property var taskAutostart: [false]
-    property var taskLocation: ["Directory"]
-    property var taskExecutable: ["Executable"]
 
-    property var taskConfig: ["Config"]
-    property var taskConfigLoca: ["Directory"]
-
-    property var taskComp: [taskNames, taskDelays, taskAutostart, taskLocation, taskExecutable, taskConfigLoca, taskConfig]
+    property var task_dict: [{
+            "name" : "Task 1",
+            "executable" : "None",
+            "working_directory" : "Directory",
+            "delay" : 0,
+            "config_file" : "None",
+            "config_dir" : "Directory",
+            "log_level" : "Log",
+            "autostart" : false,
+        }]
 
 
 
@@ -46,9 +47,9 @@ Rectangle{
                 color:"transparent"
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.left: parent.left
+                enabled: false
 
                 Text{
-
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.left: parent.left
                     text: "Title:"
@@ -59,10 +60,10 @@ Rectangle{
                 }
             }
             CusTextField{
+                id: title_textfield
                 height: parent.height/1.5
                 width: parent.width/5
-                x: 5
-                text: project_title
+                text: ""
                 onTextChanged: {
                     project_title = text // Update the array on text change
                 }
@@ -70,8 +71,39 @@ Rectangle{
                 anchors.left: project_text.right
                 anchors.leftMargin: 10
 
-            }
+                enabled: false
 
+                }
+            ButtonTemp{
+                height: parent.height/1.5
+                width: parent.width/5
+                anchors.right: parent.right
+                anchors.rightMargin: 10
+                anchors.verticalCenter: parent.verticalCenter
+                buttonText: "Create New Project"
+
+                onClicked: {
+                    project_title: "New Project"
+                    title_textfield.enabled = true
+                    title_textfield.text = project_title
+                    task_dict = [{
+                        "name" : "Task 1",
+                        "executable" : "None",
+                        "working_directory" : "Directory",
+                        "delay" : 0,
+                        "config_file" : "None",
+                        "config_dir" : "Directory",
+                        "log_level" : "Log",
+                        "autostart" : false,
+                    }]
+                    numRows = 1
+                    number = numRows
+                    tasks_win.visible = true
+                    save_but.enabled = true
+
+                }
+
+            }
         }
 
         Rectangle{
@@ -80,6 +112,8 @@ Rectangle{
             width: parent.width-10
             x: 5
             y:10 + set_project_title_bar.height
+
+            visible: false
 
             color:window.primary_color
 //                color:"green"
@@ -134,9 +168,11 @@ Rectangle{
                                 id: task_name
                                 width: parent.width/8
                                 height: parent.height/1.5
-                                text: taskNames[index] // Set the text from the array
+//                                text: taskNames[index] // Set the text from the array
+                                text: task_dict[index]["name"]
                                 onTextChanged: {
-                                    taskNames[index] = text // Update the array on text change
+//                                    taskNames[index] = text // Update the array on text change
+                                    task_dict[index]["name"] = text
                                 }
                                 anchors.verticalCenter: parent.verticalCenter
                                 anchors.left: parent.left
@@ -151,9 +187,9 @@ Rectangle{
                                 inputMethodHints: Qt.ImhDigitsOnly
                                 width: parent.width/8
                                 height: parent.height/1.5
-                                text: taskDelays[index] // Set the text from the array
+                                text: task_dict[index]["delay"] // Set the text from the array
                                 onTextChanged: {
-                                    taskDelays[index] = text // Update the array on text change
+                                    task_dict[index]["delay"] = text // Update the array on text change
                                 }
                                 anchors.verticalCenter: parent.verticalCenter
                                 anchors.left: task_name.right
@@ -164,9 +200,9 @@ Rectangle{
                                 id: task_executable
                                 width: parent.width/8
                                 height: parent.height/1.5
-                                text: taskExecutable[index] // Set the text from the array
+                                text: task_dict[index]["executable"] // Set the text from the array
                                 onTextChanged: {
-                                    taskExecutable[index] = text // Update the array on text change
+                                    task_dict[index]["executable"] = text // Update the array on text change
                                 }
                                 anchors.verticalCenter: parent.verticalCenter
                                 anchors.left: task_delay.right
@@ -184,20 +220,25 @@ Rectangle{
 
                                 onClicked: {
 //                                        task_manager_model.settings.file_path_request(index)
-                                    fileDialog.location = taskLocation
-                                    fileDialog.executable = taskExecutable
+//                                    fileDialog.location = taskLocation
+//                                    fileDialog.executable = task_dict
+
+                                    fileDialog.location = "working_directory"
+                                    fileDialog.executable = "executable"
 
                                     fileDialog.currentIndex = index
                                     fileDialog.open()
+
+                                    task_executable.text = task_dict[index]["executable"]
                                 }
                             }
                             CusTextField{
                                 id: task_config
                                 width: parent.width/8
                                 height: parent.height/1.5
-                                text: taskConfig[index] // Set the text from the array
+                                text: task_dict[index]["config_file"] // Set the text from the array
                                 onTextChanged: {
-                                    taskConfig[index] = text // Update the array on text change
+                                    task_dict[index]["config_file"] = text // Update the array on text change
                                 }
                                 anchors.verticalCenter: parent.verticalCenter
                                 anchors.left: task_executable_locator.right
@@ -215,8 +256,11 @@ Rectangle{
 
                                 onClicked: {
                                     //                                        task_manager_model.settings.file_path_request(index)
-                                    fileDialog.location = taskConfigLoca
-                                    fileDialog.executable = taskConfig
+//                                    fileDialog.location = taskConfigLoca
+//                                    fileDialog.executable = taskConfig
+
+                                    fileDialog.location = "config_dir"
+                                    fileDialog.executable = "config_file"
 
                                     fileDialog.currentIndex = index
                                     fileDialog.open()
@@ -231,12 +275,12 @@ Rectangle{
                                 color: "transparent"
 
                                 CheckBox{
-                                    checked: taskAutostart[index]
+                                    checked: task_dict[index]["autostart"]
 
                                     height: parent.height/1.5
                                     width: height
                                     onCheckedChanged: {
-                                        taskAutostart[index] = !taskAutostart[index]
+                                        task_dict[index]["autostart"] = !taskAutostart[index]
                                     }
                                     anchors.centerIn: parent
 
@@ -272,6 +316,12 @@ Rectangle{
                 buttonText: "Save Project"
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.right: parent.right
+                enabled: false
+                onClicked:{
+                    var stringArg = "Hello"
+                    var listArg = [1,2,3]
+                    task_manager_model.settings.create_json_request(stringArg, [{"title": project_title},{"tasks": task_dict}], project_title)
+                }
 
             }
             ButtonTemp{
@@ -285,14 +335,16 @@ Rectangle{
                 anchors.rightMargin: 10
                 onClicked:{
                     number++
-                    taskNames.push("Task " + number)
-                    taskDelays.push(0)
-                    taskAutostart.push(false)
-                    taskLocation.push("Directory")
-                    taskExecutable.push("Executable")
-
-                    taskConfig.push("Config")
-                    taskConfigLoca.push("Directory")
+                    task_dict.push({
+                                       "name" : "Task " + number,
+                                       "executable" : "None",
+                                       "working_directory" : "Directory",
+                                       "delay" : 0,
+                                       "config_file" : "None",
+                                       "config_dir" : "None",
+                                       "log_level" : "Log",
+                                       "autostart" : false,
+                                   })
                     numRows++
                 } // Add a new task name to the array
 
@@ -308,21 +360,15 @@ Rectangle{
 
                 onClicked:{
                     if(numRows > 1){
+
+                        number--
+                        task_dict.pop()
+                        numRows--
+
                         var item = repeater.itemAt(numRows - 1);
                         repeater.itemAdded(numRows -1).destroy();
 
                         repeater.model = numRows
-
-                        number--
-                        taskNames.pop()
-                        taskDelay.pop()
-                        taskAutostart.pop()
-                        taskLocation.pop()
-                        taskExecutable.pop()
-                        taskConfig.pop()
-                        taskConfigLoca.pop()
-                        numRows--
-
                 }
                 }
 
@@ -334,8 +380,8 @@ Rectangle{
     FileDialog{
         property int currentIndex: 0
 
-        property var location: []
-        property var executable: []
+        property string location: ""
+        property string executable: ""
 
         id: fileDialog
         title: "Choose a file"
@@ -349,18 +395,18 @@ Rectangle{
         }
 
         onAccepted:{
-            location[currentIndex] = fileDialog.selectedFile.toString();
-            location[currentIndex] = location[currentIndex].substring(8);
-            var reverseLocation = reverseString(location[currentIndex]);
+            task_dict[currentIndex][location] = fileDialog.selectedFile.toString();
+            task_dict[currentIndex][location] = task_dict[currentIndex][location].substring(8);
+            var reverseLocation = reverseString(task_dict[currentIndex][location]);
 
-            executable[currentIndex] = reverseString(reverseLocation.substring(0, reverseLocation.indexOf("/")));
-            location[currentIndex] = location[currentIndex].replace("/" + executable[currentIndex], "")
+            task_dict[currentIndex][executable] = reverseString(reverseLocation.substring(0, reverseLocation.indexOf("/")));
+
+            task_dict[currentIndex][location] = task_dict[currentIndex][location].replace("/" + task_dict[currentIndex][executable], "");
+
 
             Qt.quit;
         }
         onRejected: {
-            location[currentIndex] = "None";
-            executable[currentIndex] = "no file"
             Qt.quit;
         }
 

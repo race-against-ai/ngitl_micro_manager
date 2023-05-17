@@ -9,10 +9,7 @@ import time
 from pathlib import Path
 from typing import List
 
-import tkinter as tk
-from tkinter import filedialog
-
-from PySide6.QtCore import QObject, Signal, Property, QCoreApplication
+from PySide6.QtCore import QObject, Signal, Property, QCoreApplication, Slot
 from PySide6.QtWidgets import QApplication, QDialog, QFileDialog
 
 
@@ -125,12 +122,13 @@ class TaskModel(QObject):
 
     def set_switch_stage(self, value: bool):
         self._switch_state = value
-        self.switch_state_changed.emit()
 
         qml_task_object = self.findChild(QObject, "qml_task_object")
 
         if qml_task_object is not None:
             qml_task_object.setProperty("switch_state", value)
+
+        self.switch_state_changed.emit()
 
     def run_process(self) -> None:
         """Run the wanted executable and set its delay after startup"""
@@ -193,14 +191,15 @@ class SettingsModel(QObject):
     theme_change_request = Signal(name="theme_change_request")
     open_folder_request = Signal(name="open_folder_request")
     project_change_request = Signal(name="project_change_request")
-    file_path_request = Signal(object, name="file_path_request")
+    # create_json_request = Signal(name="create_json_request")
+    create_json_request = Signal(str, list, str)
 
     def __init__(self, parent=None) -> None:
         super().__init__(parent)
         self.theme_change_request.connect(self.handle_theme_change_request)
         self.open_folder_request.connect(self.handle_open_folder_request)
         self.project_change_request.connect(self.handle_project_change_request)
-        self.file_path_request.connect(self.handle_file_path_request)
+        self.create_json_request.connect(self.handle_create_json)
 
         self.project = None
 
@@ -224,21 +223,49 @@ class SettingsModel(QObject):
     def handle_project_change_request(self) -> None:
         print("Changing Project")
 
-    def handle_file_path_request(self, index) -> None:
-        """Opens a file locator through Tkinter... I couldn't figure out how to do it through QML :("""
-        root = tk.Tk()
-        root.withdraw()
+    # @Slot(str, object)
+    def handle_create_json(self, filepath, content, filename) -> None:
+        """Exports give arguments from QML to a new Json file.
+        filepath currently is useless as I couldn't figure out how to enable 'select Folder' mode for FileDialog with our
+        QtQuick.Dialogs Version :("""
+        filepath = "projects"
+        print(f"creating json file in: {filepath}")
+        # print(f'File is includes:"{content}"')
+        export_list = []
+        for task in content[1]["tasks"]:
+            # Formatting the list to not be alphabetically sorted
+            task_dict = {
+                "name": task["name"],
+                "executable": task["executable"],
+                "working_directory": task["working_directory"],
+                "delay": task["delay"],
+                "config_file": task["config_file"],
+                "config_direction": task["config_dir"],
+                "log_level": task["log_level"],
+                "autostart": task["autostart"]
+            }
+            export_list.append(task_dict)
+        finished_dict = {"title": content[0]["title"], "tasks": export_list}
+        # print(f"finished list is:"
+        #       f"{finished_list}")
+        file = json.dumps(finished_dict, indent=4)
+        filename = filename.strip().replace(" ", "_").lower()
+        extension = ".json"
+        # small check so there isn't a project.json.json ;)
+        if filename[-5:] == extension:
+            filename = filename[:-5]
 
-        file_path = filedialog.askopenfilename()
-        result = [index, file_path]
-        # print(file_path)
-        self.file_path_request.emit(result)
+        new_filename = filename+extension
+        # A Check to ensure that other projects aren't being overwritten, model is the same as in windows
+        counter = 1
+        while os.path.exists(filepath+"/"+new_filename):
+            new_filename = f'{filename}_{counter}{extension}'
+            counter += 1
 
-        root.destroy()
-
-    # def handle_project_creator_request(self, title, name_list, task_list, delay_list) -> None:
-    #     print("New Project Creator Requested")
-    #     creator = ConfigFileCreator(title)
+        # I couldn't figure out how to select only a folder in QML, so this is a workaround :(
+        with open(f"{filepath}/{new_filename}", 'w') as f:
+            f.write(file)
+            print(f'File save as: {new_filename}')
 
 
 class ProjectModel(QObject):
@@ -260,7 +287,7 @@ class ProjectModel(QObject):
         for task in self.task_list:
             # print(task.name)
 
-            if task.autostart and not task.process:
+            if task.autostart and not task.process and task.executable != "None":
 
                 task.run_process()
                 print(f'Task {task.name}: Pausing for {task.delay}s')
@@ -281,38 +308,5 @@ class ProjectModel(QObject):
 
     def append_tasks(self, tasks: []):
         for task in tasks:
-            self._task_list.append(task.task_model)
+            self._task_list.append(task)
         self.task_list_changed.emit()
-
-
-class ConfigFileCreator:
-    """
-    A Json File Creator for a new Project, for creating enter a Project name,
-    then call the append_task for appending a task to the project.
-
-    Finally, you need to export the file with a filename and directory.
-    The Config file is meant to then be readable by the MicroManager later on
-    """
-
-    def __init__(self, title):
-        self._config_file = {}
-        self._task_list = []
-
-    def append_task(self, name, autostart, file_path, delay, working_dir, config_file, log_level):
-        print(f'adding task: {name}'
-              f'to the Task Dictionary ')
-        task_dict = {
-            "name": name,
-            "autostart": autostart,
-            "executable": file_path,
-            "delay": delay,
-            "working_directory": working_dir,
-            "config_file": config_file,
-            "log_level": log_level
-        }
-        self._task_list.append(task_dict)
-
-    def export_config(self, filename, file_path):
-        print(f"exporting config {filename} to {file_path}")
-        self._config_file["title"] = self.title
-        self._config_file["tasks"] = self._task_list

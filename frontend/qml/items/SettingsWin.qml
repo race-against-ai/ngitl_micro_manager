@@ -140,10 +140,10 @@ Window {
             visible: false
             }
 
-//        CreatorTab{
-//            id: tasks
-//            visible: false
-//        }
+        CreatorTab{
+            id: tasks
+            visible: false
+        }
 
     }
 }

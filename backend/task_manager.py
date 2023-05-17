@@ -15,7 +15,6 @@ from PySide6.QtQml import QQmlApplicationEngine
 
 from task_manager_model import TaskManagerModel, TaskModel
 
-from task import Task
 
 
 class TaskManager:
@@ -43,7 +42,7 @@ class TaskManager:
                 self.root_object.setProperty(entry, key)
 
         with open('project.json', 'r') as f:
-            self.tasks: List[Task] = []
+            self.tasks: List[TaskModel] = []
             file = json.load(f)
 
             if "title" in file:
@@ -52,7 +51,7 @@ class TaskManager:
 
             tasks = file["tasks"]
             for entry in tasks:
-                self.tasks.append(Task(entry))
+                self.tasks.append(TaskModel(entry))
 
         self.root_object.setProperty("width", self.resolution[0])
         self.root_object.setProperty("height", self.resolution[1])

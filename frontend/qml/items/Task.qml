@@ -14,79 +14,124 @@ Rectangle {
     width: parent.width
     height: width/14
 
+
     color: window.secondary_color
+
     border.width: 0
     radius: 20
 
-    RowLayout {
+    Rectangle {
+        id: title_rectangle
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.left: parent.left
+        anchors.leftMargin: 5
 
-        anchors.fill: parent
+        height: parent.height
+        width: parent.width/2.5
 
-        spacing: 10
+        color: "transparent"
 
-        Rectangle {
-            id: title_rectangle
+        Text {
+            Layout.maximumWidth: 400
 
-            Layout.alignment: Qt.AlignVCenter
+            wrapMode: Text.Wrap
+            font.pixelSize: title_rectangle.width/10
 
-            color: 'transparent'
+            text: taskModel.name
 
-            height: task.height * 0.9
-            width: task.width/8
-            Layout.leftMargin: height/6
+            color: "white"
 
-            Text {
+            anchors.verticalCenter: parent.verticalCenter
+        }
+    }
 
-                Layout.maximumWidth: 400
+    Rectangle{
+        id: button_rectangle
+        height: parent.height-parent.height/5
+        width: parent.width/3
 
-                wrapMode: Text.Wrap
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.left: title_rectangle.right
+        anchors.leftMargin: 5
+
+        color: "transparent"
+
+        ButtonTemp{
+            id: log_button
+            width: parent.width/2
+            height: parent.height/2.1
+
+            buttonText: "Log"
+            onClicked: {
+                taskModel.open_log_request()
+            }
+        }
+
+        ButtonTemp {
+
+            width: parent.width/2
+            height: parent.height/2.1
+
+            buttonText: "Config"
+            onClicked: taskModel.open_config_request()
+            anchors.bottom: parent.bottom
+        }
+
+        Rectangle{
+            height: parent.height
+            width: parent.width/2
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.right: parent.right
+            color: "transparent"
+
+            ComboBox{
+                width: parent.parent.width/3
+                height: parent.height/2.3
+                model: ["INFO", "DEBUG"]
+
                 anchors.verticalCenter: parent.verticalCenter
-                anchors.left: parent.left
-                font.pixelSize: parent.height/3
+                anchors.horizontalCenter: parent.horizontalCenter
 
-                text: taskModel.name
-                color: window.lightFontColor
-            }
-        }
+                background: Rectangle{
+                    color: window.primary_color
+                    radius:5
 
-        Column {
-
-            id: button_column
-
-            Layout.alignment: Qt.AlignVCenter
-
-            height: task.height
-            width: window.width/8
-            spacing: height/18
-
-            ButtonTemp{
-
-                width: window.width/8
-                height: task.height/2.5
-
-                buttonText: "Log"
-                onClicked: {
-                    taskModel.open_log_request()
                 }
+                visible: {
+                    if(window.devMode){
+                        true
+                    }
+                    else{
+                       false
+                    }
+                }
+
             }
 
-            ButtonTemp {
-
-                width: window.width/8
-                height: task.height/2.5
-
-                buttonText: "Config"
-                onClicked: taskModel.open_config_request()
-            }
         }
+    }
+
+    Rectangle{
+        id: switch_rectangle
+
+        height: parent.height
+        width: parent.width/6
+
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.left: button_rectangle.right
+        anchors.leftMargin: 5
+
+        color:  "transparent"
 
         CuSwitch{
             id: run_switch
 
-            width: task.width/10
-            height: task.height/2.5
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.horizontalCenter: parent.horizontalCenter
 
-            Layout.alignment: Qt.AlignVCenter
+            width: parent.width/1.5
+            height: parent.heigth/2.5
+
             ontext: "Running"
             offtext: "Stopped"
 
@@ -108,22 +153,21 @@ Rectangle {
             Component.onCompleted: {
                 switchOn = switch_stage
             }
-
         }
+    }
 
-        Rectangle {
-            id: state_visualizer_rectangle
+    Rectangle{
+        id: state_visualizer_rectangle
 
-            Layout.alignment: Qt.AlignVCenter
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.left: switch_rectangle.right
 
-            color: taskModel.state_color
+        width: parent.width/100
+        height: width
+        radius: width
 
-            height: parent.height/8
-            width: height
-
-            radius: height
-
-        }
+        anchors.leftMargin: width
+        color: taskModel.state_color
 
     }
 
