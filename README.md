@@ -7,7 +7,7 @@ It also includes a Project Creator in its settings window, to set up another pro
 
 ## Setup environment
 
-To setup a development environment and install all requirements run the following commands (example for windows):
+To set up a development environment and install all requirements run the following commands (example for windows):
 
     python -m venv venv
     venv/Scripts/activate

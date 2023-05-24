@@ -6,6 +6,7 @@ Button {
 
     property string buttonText: ""
     property color bcolor: window.tertiary_color
+    property int radius_var: 3
 
     text: buttonText
 
@@ -16,7 +17,7 @@ Button {
         color: bcolor
         width: parent.width
         height: parent.height
-        radius: 3
+        radius: radius_var
 
 
     }

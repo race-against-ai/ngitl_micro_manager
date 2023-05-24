@@ -82,6 +82,7 @@ Window {
                 width: parent.width
                 height: parent.height/10
                 buttonText: "Settings"
+                radius_var: 0
 
                 onClicked:{
                     top_title = "Settings"
@@ -96,6 +97,7 @@ Window {
                 width: parent.width
                 height:parent.height/10
                 buttonText: "Project Creator"
+                radius_var: 0
 
                 onClicked: {
                     top_title = "Project Creator"
@@ -107,21 +109,21 @@ Window {
                     }
                 }
             }
-            ButtonTemp{
-                width: parent.width
-                height: parent.height/10
-                buttonText: "Project Editor"
+//            ButtonTemp{
+//                width: parent.width
+//                height: parent.height/10
+//                buttonText: "Project Editor"
 
-                onClicked:{
-                    top_title = "Project Editor"
-                    if(tasks.visible){
-                        tasks.visible = false
-                    }
-                    if(settings.visible){
-                        settings.visible = false
-                    }
-                }
-            }
+//                onClicked:{
+//                    top_title = "Project Editor"
+//                    if(tasks.visible){
+//                        tasks.visible = false
+//                    }
+//                    if(settings.visible){
+//                        settings.visible = false
+//                    }
+//                }
+//            }
         }
     }
 

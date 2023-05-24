@@ -1,6 +1,7 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
+import QtQuick.Dialogs
 
 Rectangle{
     id: title_bar
@@ -25,7 +26,8 @@ Rectangle{
 
         Text {
             id: title
-            text: window.titleText
+//            text: window.titleText
+            text: task_manager_model.project.project_title
             color: window.lightFontColor
             font.pointSize: parent.height/2
             leftPadding: height/6
@@ -65,6 +67,7 @@ Rectangle{
                 onSwitchOnChanged: {
                     if (switchOn) {
                         task_manager_model.project.start_all_tasks_request()
+
                     } else {
                         task_manager_model.project.stop_all_tasks_request()
                     }
@@ -83,9 +86,26 @@ Rectangle{
                 x: command.width - width - command.height/4
 
                 onClicked: {
-                    task_manager_model.settings.project_change_request()
+//                    task_manager_model.project.project_change_request()
+                    fileDialog.open()
                 }
             }
+// This Button is an example on how we could fix the issue regarding
+// Start_all not setting every activated Switch
+
+//            Button{
+//                id: test_button
+//                anchors.verticalCenter: parent.verticalCenter
+//                anchors.right: project_change.left
+
+//                text: "Empty List"
+
+//                onClicked: {
+//                    for (var i = 0; i < task_repeater.count; i++){
+//                        task_repeater.itemAt(i).switch_state = false;
+//                    }
+//                }
+//            }
 
 
         }
@@ -96,5 +116,24 @@ Rectangle{
          y: upper_part.height + command.y - 12
 
      }
+
+     FileDialog{
+        property string project_file: ""
+
+        id: fileDialog
+        title: "Choose a Project"
+
+        nameFilters: ["JSON File (*.json)"]
+
+        onAccepted: {
+            fileDialog.project_file = fileDialog.selectedFile.toString().substring(8);
+            task_manager_model.project.project_change_request(fileDialog.project_file);
+            start_all.switchOn = false
+
+//            Qt.quit()
+        }
+
+     }
+
 
 }

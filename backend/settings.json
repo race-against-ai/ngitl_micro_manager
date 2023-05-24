@@ -1,14 +1,14 @@
 {
-  "resolution": [
-    800,
-    600
-  ],
-  "theme": {
-    "primary_color": "#262b33",
-    "secondary_color": "#2f343f",
-    "tertiary_color": "#4c5e7c"
-  },
-  "log_level": "INFO",
-
-  "dev_mode": false
+    "resolution": [
+        800,
+        600
+    ],
+    "theme": {
+        "primary_color": "#262b33",
+        "secondary_color": "#2f343f",
+        "tertiary_color": "#4c5e7c"
+    },
+    "log_level": "INFO",
+    "dev_mode": false,
+    "standard_project": ""
 }

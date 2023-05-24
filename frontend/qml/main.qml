@@ -11,20 +11,23 @@ Window {
     width: 800
     height: 600
 
-    property string titleText: "NGITL MicroManager"
+    property string titleText: task_manager_model.project.project_title
 
     property color primary_color: "#262b33" // background
     property color secondary_color: "#2f343f" // complementary to the background
     property color tertiary_color: '#4c5e7c' // foreground
 
-    property color lightFontColor: '#F4EEE0' // Kinda white but not really
+    property color lightFontColor: '#F4EEE0' // off-white for text behind a light background
 
     property bool devMode: false
+
+    property var active_tasks: []
 
     minimumWidth: 800
     minimumHeight: 600
     visible: true
     title: qsTr("NGITL MicroManager")
+
 
 
     color: primary_color
@@ -51,7 +54,7 @@ Window {
         ScrollView {
             id:scrollView
             anchors.fill: parent
-            ScrollBar.horizontal.policy: ScrollBar.AlwaysOff // Disable horizontal scrollbar
+            ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
 
             ScrollBar.vertical: ScrollBar{
                 id: scrollBar
@@ -62,12 +65,10 @@ Window {
 
                 parent: scrollView.parent
                 x: scrollView.mirrored ? 0 : scrollView.width - width
-//                y: scrollView.topPadding
                 height: scrollView.availableHeight
-//                active: scrollView.ScrollBar.horizontal.active
 
                 background: Rectangle {
-                    color: tertiary_color // Change the color of the track
+                    color: tertiary_color
 
                 }
 
@@ -81,13 +82,16 @@ Window {
                 spacing: 3
 
                 Repeater {
-                    id: repeater
+                    id: task_repeater
 
                     model: task_manager_model.project.task_list
 
-                    Task {
+//                    onItemAdded: {
+//                        active_tasks.push(false)
+//                    }
+
+                    delegate: Task {
                         width: window.width-4
-//                        height: window.height/10
                         taskModel: modelData
 
                     }
@@ -101,5 +105,4 @@ Window {
         console.debug("foo")
        console.log(task_manager_model.project.task_list)
     }
-
 }

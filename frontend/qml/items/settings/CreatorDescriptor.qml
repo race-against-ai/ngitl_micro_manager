@@ -72,10 +72,27 @@ Rectangle{
         anchors.left: task_executable.right
         anchors.leftMargin: 10
     }
+
+    Rectangle{
+        id: task_loglevel
+        height: parent.height
+        width:parent.width/10
+        Text{
+            id: log_tag
+            text: qsTr("Log Level")
+            color: window.lightFontColor
+            anchors.centerIn: parent
+        }
+        color: "transparent"
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.left: task_config.right
+        anchors.leftMargin: 10
+    }
+
     Rectangle{
         id: task_autostart
         height:parent.height
-        width: parent.width/4
+        width: parent.width/6
         Text {
             id: autostart_tag
             text: qsTr("Autostart")
@@ -84,7 +101,7 @@ Rectangle{
         }
         color:"transparent"
         anchors.verticalCenter: parent.verticalCenter
-        anchors.left: task_config.right
-        anchors.leftMargin: 8
+        anchors.left: task_loglevel.right
+        anchors.leftMargin: 10
     }
 }

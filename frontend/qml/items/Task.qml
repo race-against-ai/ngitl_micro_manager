@@ -8,7 +8,6 @@ Rectangle {
 
     property var taskModel
 
-    property color state_color: "red"
     property bool switch_state: false
 
     width: parent.width
@@ -85,6 +84,7 @@ Rectangle {
             color: "transparent"
 
             ComboBox{
+                id: log_box
                 width: parent.parent.width/3
                 height: parent.height/2.3
                 model: ["INFO", "DEBUG"]
@@ -105,9 +105,27 @@ Rectangle {
                        false
                     }
                 }
-
             }
 
+            CheckBox{
+                id: autostart_box
+                height: parent.height/3
+                width: height
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.left: log_box.right
+                anchors.leftMargin: 5
+
+                checked: taskModel.autostart_state
+
+                visible: {
+                    if(window.devMode){
+                        true
+                    }
+                    else{
+                       false
+                    }
+                }
+            }
         }
     }
 
@@ -130,29 +148,28 @@ Rectangle {
             anchors.horizontalCenter: parent.horizontalCenter
 
             width: parent.width/1.5
-            height: parent.heigth/2.5
+            height: task.heigth/2.5
 
             ontext: "Running"
             offtext: "Stopped"
 
             oncolor: window.tertiary_color
 
+            switchOn: switch_state
+
             onSwitchOnChanged: {
                 if (switchOn) {
-                    switchOn = true
+//                    switchOn = true
                     taskModel.run_exe_request()
 
                 } else {
-                    switchOn = false
+//                    switchOn = false
                     taskModel.kill_exe_request()
 
                 }
 
             }
 
-            Component.onCompleted: {
-                switchOn = switch_stage
-            }
         }
     }
 

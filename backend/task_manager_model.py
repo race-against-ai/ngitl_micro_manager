@@ -25,9 +25,10 @@ def run_process(process_name: str, path, file: str) -> subprocess.Popen:
 
 
 class TaskModel(QObject):
-    """TaskModel Class for Qt, currently the button functions are nested here :( """
+    """TaskModel Class for Qt, the button functions are nested here """
     state_color_changed = Signal()
     switch_state_changed = Signal()
+    # autostart_state_changed = Signal()
 
     name_changed = Signal(name="name_changed")
 
@@ -42,6 +43,7 @@ class TaskModel(QObject):
         self._name = task['name']
 
         self._state_color = 'red'
+
         self._switch_state = False
 
         self.autostart = task['autostart']
@@ -50,6 +52,8 @@ class TaskModel(QObject):
         self.executable = task['executable']
         self.log_level = task['log_level']
         self.delay = task['delay']
+        self.config_file = task['config_file']
+        self.config_location = task['config_direction']
 
         # check if the executable is currently running
         self.process = None
@@ -62,17 +66,28 @@ class TaskModel(QObject):
 
     def handle_open_config_request(self):
         print(f"Task: {self.name} - open config requested")
-        filepath = "settings.json"
+        if self.config_file != 'None':
+            filepath = self.config_file
+            if self.config_location != "Directory":
+                filepath = f'{self.config_location}/{self.config_file}'
 
-        if platform.system() == 'Darwin':  # macOS
-            subprocess.call(('open', filepath))
-        elif platform.system() == 'Windows':  # Windows
-            os.startfile(filepath)
-        else:  # Linux
-            subprocess.call(('xdg-open', filepath))
+            if os.path.exists(filepath):
+                if platform.system() == 'Darwin':  # macOS
+                    subprocess.call(('open', filepath))
+                elif platform.system() == 'Windows':  # Windows
+                    os.startfile(filepath)
+                else:  # Linux
+                    subprocess.call(('xdg-open', filepath))
+
+            else:
+                print("Config File not Found")
+
+        else:
+            print("Task has no Config File Configured")
 
     def handle_open_log_request(self):
         print(f'Task: {self.name} - open log requested with Log Level "{self.log_level}"')
+        # under filepath we can change the file that is supposed to open
         filepath = "example.jpg"
 
         if platform.system() == 'Darwin':  # macOS
@@ -83,17 +98,22 @@ class TaskModel(QObject):
             subprocess.call(('xdg-open', filepath))
 
     def handle_run_exe_request(self):
-        if self.process is None:
+        if self.executable == "None":
+            print(f"No Executable set for Task: {self.name}")
+
+        elif self.process is None:
             print(f'Task: {self.name} - open exe requested')
             self.run_process()
 
     def handle_close_exe_request(self):
-        print(f'Task: {self.name} - close exe requested')
-        self.terminate_process()
+        if self.executable != "None":
+            print(f'Task: {self.name} - close exe requested')
+            self.terminate_process()
 
     def handle_kill_exe_request(self):
-        print(f'Task: {self.name} - kill exe requested')
-        self.kill_process()
+        if self.executable != "None":
+            print(f'Task: {self.name} - kill exe requested')
+            self.kill_process()
 
     @Property("QString", notify=name_changed)
     def name(self) -> str:
@@ -107,35 +127,25 @@ class TaskModel(QObject):
     def state_color(self):
         return self._state_color
 
-    @Property(str, notify=switch_state_changed)
+    @Property(bool, notify=switch_state_changed)
     def switch_state(self):
         return self._switch_state
+
+    # @Property("QVariantBool", notify=autostart_state_changed)
+    # def state_color(self):
+    #     return self.autostart
 
     def set_state_color(self, value):
         self._state_color = value
         self.state_color_changed.emit()
 
-        qml_task_object = self.findChild(QObject, "qml_task_object")
-
-        if qml_task_object is not None:
-            qml_task_object.setProperty("state_color", value)
-
     def set_switch_stage(self, value: bool):
         self._switch_state = value
-
-        qml_task_object = self.findChild(QObject, "qml_task_object")
-
-        if qml_task_object is not None:
-            qml_task_object.setProperty("switch_state", value)
-
+        # print(self._switch_state)
         self.switch_state_changed.emit()
 
     def run_process(self) -> None:
         """Run the wanted executable and set its delay after startup"""
-
-        # self.process = subprocess.Popen("python while_true.py",
-        #                                 cwd=Path(__file__).parent,
-        #                                 creationflags=subprocess.CREATE_NEW_CONSOLE)
 
         # following code snippet is used when wanting to read out the executable from the settings.json...
         # currently commented out because we haven't implemented the bin folder format
@@ -190,15 +200,12 @@ class SettingsModel(QObject):
 
     theme_change_request = Signal(name="theme_change_request")
     open_folder_request = Signal(name="open_folder_request")
-    project_change_request = Signal(name="project_change_request")
-    # create_json_request = Signal(name="create_json_request")
     create_json_request = Signal(str, list, str)
 
     def __init__(self, parent=None) -> None:
         super().__init__(parent)
         self.theme_change_request.connect(self.handle_theme_change_request)
         self.open_folder_request.connect(self.handle_open_folder_request)
-        self.project_change_request.connect(self.handle_project_change_request)
         self.create_json_request.connect(self.handle_create_json)
 
         self.project = None
@@ -220,11 +227,8 @@ class SettingsModel(QObject):
         print("Opening Folder")
         subprocess.Popen(f'explorer "{self.current_path}"')
 
-    def handle_project_change_request(self) -> None:
-        print("Changing Project")
-
-    # @Slot(str, object)
-    def handle_create_json(self, filepath, content, filename) -> None:
+    @staticmethod
+    def handle_create_json(filepath, content, filename) -> None:
         """Exports give arguments from QML to a new Json file.
         filepath currently is useless as I couldn't figure out how to enable 'select Folder' mode for FileDialog with our
         QtQuick.Dialogs Version :("""
@@ -251,12 +255,12 @@ class SettingsModel(QObject):
         file = json.dumps(finished_dict, indent=4)
         filename = filename.strip().replace(" ", "_").lower()
         extension = ".json"
-        # small check so there isn't a project.json.json ;)
+        # small check so there isn't a prokect.json.json ;)
         if filename[-5:] == extension:
             filename = filename[:-5]
 
         new_filename = filename+extension
-        # A Check to ensure that other projects aren't being overwritten, model is the same as in windows
+        # A Check to ensure that other projects aren't being overwritten
         counter = 1
         while os.path.exists(filepath+"/"+new_filename):
             new_filename = f'{filename}_{counter}{extension}'
@@ -270,31 +274,33 @@ class SettingsModel(QObject):
 
 class ProjectModel(QObject):
     task_list_changed = Signal(name="task_list_changed")
+    project_title_changed = Signal(name="project_title_changed")
 
     start_all_tasks_request = Signal(name="start_all_tasks_request")
     stop_all_tasks_request = Signal(name="stop_all_tasks_request")
     download_request = Signal(name="download_request")
 
+    # project_change_request = Signal(name="project_change_request")
+    project_change_request = Signal(str, name="project_change_request")
+
     def __init__(self, parent=None):
         super().__init__(parent)
+        self._project_title = "Micro Manager"
         self._task_list: List[TaskModel] = []
         self.start_all_tasks_request.connect(self.handle_start_all_tasks_request)
         self.stop_all_tasks_request.connect(self.handle_stop_all_tasks_request)
         self.download_request.connect(self.handle_download_request)
+        self.project_change_request.connect(self.handle_project_change_request)
 
     def handle_start_all_tasks_request(self) -> None:
-
         for task in self.task_list:
-            # print(task.name)
-
             if task.autostart and not task.process and task.executable != "None":
-
                 task.run_process()
                 print(f'Task {task.name}: Pausing for {task.delay}s')
-                time.sleep(task.delay)
+                time.sleep(int(task.delay))
 
     def handle_stop_all_tasks_request(self) -> None:
-        for task in self.task_list:
+        for task in self._task_list:
             # print(task.name)
             if task.process:
                 task.kill_process()
@@ -306,7 +312,32 @@ class ProjectModel(QObject):
     def task_list(self):
         return self._task_list
 
+    @Property("QVariant", notify=project_title_changed)
+    def project_title(self):
+        return self._project_title
+
     def append_tasks(self, tasks: []):
+        """Shown tasks are getting appended here"""
         for task in tasks:
             self._task_list.append(task)
         self.task_list_changed.emit()
+
+    def handle_project_change_request(self, file):
+        print("Changing Project")
+        self.handle_stop_all_tasks_request()
+        self._task_list.clear()
+
+        with open(file) as f:
+            project = json.load(f)
+
+            if "title" in project:
+                new_title = project["title"]
+                self._project_title = new_title
+                self.project_title_changed.emit()
+
+            temp_list = []
+            tasks = project["tasks"]
+            for entry in tasks:
+                temp_list.append(TaskModel(entry))
+
+        self.append_tasks(temp_list)

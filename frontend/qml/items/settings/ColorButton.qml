@@ -12,6 +12,7 @@ Button{
 
     width:parent.width/2
     height: parent.height/3
+//    color: "transparent"
     background: Rectangle{
         width: parent.width
         height: parent.height

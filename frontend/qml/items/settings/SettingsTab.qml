@@ -195,7 +195,7 @@ Rectangle{
                 id: light_ngitl
                 anchors.left: dark_ngitl.right
                 anchors.top: dark_mate.bottom
-                theme_name: "Light NGITl"
+                theme_name: "Light NGITL"
                 primary: "#99b5b5"
                 secondary:"#668e8e"
                 tertiary: "#809999"

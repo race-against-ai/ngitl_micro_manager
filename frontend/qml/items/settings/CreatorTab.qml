@@ -18,7 +18,7 @@ Rectangle{
             "delay" : 0,
             "config_file" : "None",
             "config_dir" : "Directory",
-            "log_level" : "Log",
+            "log_level" : "INFO",
             "autostart" : false,
         }]
 
@@ -86,6 +86,7 @@ Rectangle{
                     project_title: "New Project"
                     title_textfield.enabled = true
                     title_textfield.text = project_title
+
                     task_dict = [{
                         "name" : "Task 1",
                         "executable" : "None",
@@ -93,9 +94,10 @@ Rectangle{
                         "delay" : 0,
                         "config_file" : "None",
                         "config_dir" : "Directory",
-                        "log_level" : "Log",
+                        "log_level" : "INFO",
                         "autostart" : false,
                     }]
+
                     numRows = 1
                     number = numRows
                     tasks_win.visible = true
@@ -140,18 +142,14 @@ Rectangle{
                         color: tertiary_color // Change the color of the track
 
                         }
-
                  }
 
                 Column{
                     anchors.fill: parent
 
                     CreatorDescriptor{
-//                            height: tasks_win.height/10
                         width: tasks_win.width
                     }
-
-
 
                     Repeater{
                         id: repeater
@@ -225,6 +223,8 @@ Rectangle{
 
                                     fileDialog.location = "working_directory"
                                     fileDialog.executable = "executable"
+                                    fileDialog.filetype = ["Executables (*.exe)", "bat files (*.bat)"]
+                                    fileDialog.title = "Choose an Exe or Bat File"
 
                                     fileDialog.currentIndex = index
                                     fileDialog.open()
@@ -261,6 +261,8 @@ Rectangle{
 
                                     fileDialog.location = "config_dir"
                                     fileDialog.executable = "config_file"
+                                    fileDialog.filetype = ["Text Files (*.txt)"]
+                                    fileDialog.title = "Choose a Config File"
 
                                     fileDialog.currentIndex = index
                                     fileDialog.open()
@@ -268,10 +270,55 @@ Rectangle{
 
 
                             }
+
+                            Rectangle{
+                                id: log_box
+                                height: parent.height/1.2
+                                width: parent.width/10
+                                anchors.verticalCenter: parent.verticalCenter
+                                anchors.left: task_config_locator.right
+                                anchors.leftMargin: 10
+                                color: "transparent"
+
+                                ComboBox{
+                                    width: parent.width
+                                    height: parent.height
+                                    currentIndex: 0
+
+                                    model: ["INFO", "DEBUG"]
+
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    anchors.horizontalCenter: parent.horizontalCenter
+
+                                    delegate: {
+                                        width: parent.width
+                                        contentItem:Text
+                                            color: window.lightFontColor
+
+
+                                    }
+                                    background: Rectangle{
+                                        color: window.primary_color
+                                        radius:5
+                                        }
+
+                                    onCurrentIndexChanged: {
+                                        if(currentIndex === 0){
+                                            task_dict[index]["log_level"] = "INFO"
+                                        }
+                                        else{
+                                            task_dict[index]["log_level"] = "DEBUG"
+                                        }
+                                    }
+
+                                    }
+                                }
+
+
                             Rectangle{
                                 id: task_autostart
                                 height:parent.height
-                                width: parent.width/4
+                                width: parent.width/6
                                 color: "transparent"
 
                                 CheckBox{
@@ -280,14 +327,14 @@ Rectangle{
                                     height: parent.height/1.5
                                     width: height
                                     onCheckedChanged: {
-                                        task_dict[index]["autostart"] = !taskAutostart[index]
+                                        task_dict[index]["autostart"] = checked
                                     }
                                     anchors.centerIn: parent
 
 
                                 }
                             anchors.verticalCenter: parent.verticalCenter
-                            anchors.left: task_config_locator.right
+                            anchors.left: log_box.right
                             anchors.leftMargin: 10
                             }
 
@@ -342,7 +389,7 @@ Rectangle{
                                        "delay" : 0,
                                        "config_file" : "None",
                                        "config_dir" : "None",
-                                       "log_level" : "Log",
+                                       "log_level" : "INFO",
                                        "autostart" : false,
                                    })
                     numRows++
@@ -383,6 +430,8 @@ Rectangle{
         property string location: ""
         property string executable: ""
 
+        property var filetype: []
+
         id: fileDialog
         title: "Choose a file"
 
@@ -394,15 +443,20 @@ Rectangle{
             return result;
         }
 
+        nameFilters: filetype
+
         onAccepted:{
-            task_dict[currentIndex][location] = fileDialog.selectedFile.toString();
-            task_dict[currentIndex][location] = task_dict[currentIndex][location].substring(8);
+            task_dict[currentIndex][location] = fileDialog.selectedFile.toString().substring(8);
+//            task_dict[currentIndex][location] = task_dict[currentIndex][location].substring(8);
             var reverseLocation = reverseString(task_dict[currentIndex][location]);
 
             task_dict[currentIndex][executable] = reverseString(reverseLocation.substring(0, reverseLocation.indexOf("/")));
 
             task_dict[currentIndex][location] = task_dict[currentIndex][location].replace("/" + task_dict[currentIndex][executable], "");
 
+            // Refreshes the Repeater to show the change :/
+            numRows++
+            numRows--
 
             Qt.quit;
         }

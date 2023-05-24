@@ -1,0 +1,65 @@
+{
+    "title": "Race Against AI",
+    "tasks": [
+        {
+            "name": "Image Broker",
+            "executable": "start_live_image_broker.bat",
+            "working_directory": "C:/Users/VW2SMDW/race_against_ai/software",
+            "delay": "2",
+            "config_file": "requirements.txt",
+            "config_direction": "C:/Users/VW2SMDW/Repos/race_against_ai/software/live_view/live_image_broker",
+            "log_level": "INFO",
+            "autostart": true
+        },
+        {
+            "name": "Live Visualization",
+            "executable": "start_live_visualization.bat",
+            "working_directory": "C:/Users/VW2SMDW/race_against_ai/software",
+            "delay": "0",
+            "config_file": "requirements.txt",
+            "config_direction": "C:/Users/VW2SMDW/race_against_ai/software/live_view/live_visualization/backend",
+            "log_level": "INFO",
+            "autostart": true
+        },
+        {
+            "name": "Camera",
+            "executable": "start_live_camera.bat",
+            "working_directory": "C:/Users/VW2SMDW/race_against_ai/software",
+            "delay": "0",
+            "config_file": "None",
+            "config_direction": "None",
+            "log_level": "INFO",
+            "autostart": false
+        },
+        {
+            "name": "Platform",
+            "executable": "start_dbox_platform_interface.bat",
+            "working_directory": "C:/Users/VW2SMDW/race_against_ai/software",
+            "delay": "5",
+            "config_file": "None",
+            "config_direction": "None",
+            "log_level": "INFO",
+            "autostart": false
+        },
+        {
+            "name": "Control Panel",
+            "executable": "start_control_panel.bat",
+            "working_directory": "C:/Users/VW2SMDW/race_against_ai/software",
+            "delay": "0",
+            "config_file": "None",
+            "config_direction": "None",
+            "log_level": "INFO",
+            "autostart": false
+        },
+        {
+            "name": "Test Source",
+            "executable": "start_live_image_test_source.bat",
+            "working_directory": "C:/Users/VW2SMDW/race_against_ai/software",
+            "delay": "0",
+            "config_file": "None",
+            "config_direction": "None",
+            "log_level": "INFO",
+            "autostart": false
+        }
+    ]
+}
