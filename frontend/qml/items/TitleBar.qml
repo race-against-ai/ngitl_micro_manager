@@ -32,7 +32,7 @@ Rectangle{
             font.pointSize: parent.height/2
             leftPadding: height/6
             wrapMode: Text.Wrap
-            width: parent.width - BurgerMenu.burgerButton.width - height/3
+//            width: parent.width - BurgerMenu.burgerButton.width - height/3
 
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: parent.left
@@ -86,27 +86,9 @@ Rectangle{
                 x: command.width - width - command.height/4
 
                 onClicked: {
-//                    task_manager_model.project.project_change_request()
                     fileDialog.open()
                 }
             }
-// This Button is an example on how we could fix the issue regarding
-// Start_all not setting every activated Switch
-
-//            Button{
-//                id: test_button
-//                anchors.verticalCenter: parent.verticalCenter
-//                anchors.right: project_change.left
-
-//                text: "Empty List"
-
-//                onClicked: {
-//                    for (var i = 0; i < task_repeater.count; i++){
-//                        task_repeater.itemAt(i).switch_state = false;
-//                    }
-//                }
-//            }
-
 
         }
 

@@ -16,8 +16,16 @@ from PySide6.QtWidgets import QApplication, QDialog, QFileDialog
 def run_process(process_name: str, path, file: str) -> subprocess.Popen:
     """Run the wanted executable and set its delay after startup"""
     print(f'Starting Process: {process_name}')
+    if path == "Directory":
+        filepath = file
 
-    process = subprocess.Popen(f'{path}\\{file}',
+    else:
+        filepath = f'{path}\\{file}'
+
+    if file[:-3] == ".py":
+        filepath = ['python', filepath]
+
+    process = subprocess.Popen(filepath,
                                cwd=path,
                                creationflags=subprocess.CREATE_NEW_CONSOLE)
 
@@ -28,8 +36,8 @@ class TaskModel(QObject):
     """TaskModel Class for Qt, the button functions are nested here """
     state_color_changed = Signal()
     switch_state_changed = Signal()
-    # autostart_state_changed = Signal()
 
+    autostart_state_request = Signal(bool, name='autostart_state_request')
     name_changed = Signal(name="name_changed")
 
     open_log_request = Signal(name="open_log_request")
@@ -41,13 +49,10 @@ class TaskModel(QObject):
     def __init__(self, task: dict) -> None:
         QObject.__init__(self)
         self._name = task['name']
-
         self._state_color = 'red'
-
         self._switch_state = False
 
         self.autostart = task['autostart']
-
         self.path = task['working_directory']
         self.executable = task['executable']
         self.log_level = task['log_level']
@@ -63,6 +68,7 @@ class TaskModel(QObject):
         self.run_exe_request.connect(self.handle_run_exe_request)
         self.close_exe_request.connect(self.handle_close_exe_request)
         self.kill_exe_request.connect(self.handle_kill_exe_request)
+        self.autostart_state_request.connect(self.autostart_setter)
 
     def handle_open_config_request(self):
         print(f"Task: {self.name} - open config requested")
@@ -128,12 +134,17 @@ class TaskModel(QObject):
         return self._state_color
 
     @Property(bool, notify=switch_state_changed)
-    def switch_state(self):
+    def switch_state(self) -> bool:
         return self._switch_state
 
-    # @Property("QVariantBool", notify=autostart_state_changed)
-    # def state_color(self):
-    #     return self.autostart
+    @Property(bool)
+    def autostart_state(self) -> bool:
+        return self.autostart
+
+    def autostart_setter(self, value):
+        if self.autostart != value:
+            self.autostart = value
+            # self.autostart_state_changed.emit()
 
     def set_state_color(self, value):
         self._state_color = value
@@ -141,14 +152,10 @@ class TaskModel(QObject):
 
     def set_switch_stage(self, value: bool):
         self._switch_state = value
-        # print(self._switch_state)
         self.switch_state_changed.emit()
 
     def run_process(self) -> None:
         """Run the wanted executable and set its delay after startup"""
-
-        # following code snippet is used when wanting to read out the executable from the settings.json...
-        # currently commented out because we haven't implemented the bin folder format
         self.process = run_process(self.name, self.path, self.executable)
 
         self.set_state_color("green")

@@ -13,54 +13,8 @@ Rectangle{
     color: window.primary_color
 
     Rectangle{
-        id: height_menu
-        anchors.top: parent.top
-        anchors.topMargin: 5
-        anchors.right: parent.right
-        anchors.rightMargin: 5
-        color: window.secondary_color
-
-        width: parent.width-10
-        height: parent.height/7
-
-        Text{
-            text: "Resolution"
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.left: parent.left
-            anchors.leftMargin: 5
-            color: window.lightFontColor
-
-            font.pointSize: main_window.height/20
-            wrapMode: Text.Wrap
-        }
-    }
-
-    Rectangle{
-        id: log_menu
-        anchors.top: height_menu.bottom
-        anchors.topMargin: 5
-        anchors.right: parent.right
-        anchors.rightMargin: 5
-        color: window.secondary_color
-
-        width: parent.width-10
-        height: parent.height/7
-
-        Text{
-            text: "Log Level"
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.left: parent.left
-            anchors.leftMargin: 5
-            color: window.lightFontColor
-
-            font.pointSize: main_window.height/20
-            wrapMode: Text.Wrap
-        }
-    }
-
-    Rectangle{
         id: dev_menu
-        anchors.top: log_menu.bottom
+        anchors.top: parent.top
         anchors.topMargin: 5
         anchors.right: parent.right
         anchors.rightMargin: 5
@@ -86,7 +40,7 @@ Rectangle{
             height: parent.height/1.5
             width: height
             onCheckedChanged: {
-                window.devMode = !window.devMode
+                window.devMode = checked
             }
             anchors.centerIn: parent
 

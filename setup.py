@@ -1,7 +1,7 @@
 import os
 from setuptools import find_packages, setup
 
-NAME = 'MicroManager'
+NAME = 'micro_manager'
 VERSION = '0.0.1'
 
 def read(fname):
@@ -16,6 +16,9 @@ setup(
     keywords="manager pyqt qtquick",
     url="https://github.com/PhilippTrashman",
     packages=find_packages(),
+    entry_points={
+        "console_scripts": ["micro_manager=backend.main:main"],
+    },
     long_description=read('README.md'),
     install_requires=[],
     cmdclass={}

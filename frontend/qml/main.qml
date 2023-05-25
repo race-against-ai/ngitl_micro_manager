@@ -102,7 +102,6 @@ Window {
 
 
     Component.onCompleted: {
-        console.debug("foo")
        console.log(task_manager_model.project.task_list)
     }
 }

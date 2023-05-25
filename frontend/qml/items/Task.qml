@@ -115,7 +115,7 @@ Rectangle {
                 anchors.left: log_box.right
                 anchors.leftMargin: 5
 
-                checked: taskModel.autostart_state
+                checked: false
 
                 visible: {
                     if(window.devMode){
@@ -124,6 +124,12 @@ Rectangle {
                     else{
                        false
                     }
+                }
+                onCheckedChanged: {
+                    taskModel.autostart_state_request(checked)
+                }
+                Component.onCompleted: {
+                    checked = taskModel.autostart_state
                 }
             }
         }
@@ -155,17 +161,13 @@ Rectangle {
 
             oncolor: window.tertiary_color
 
-            switchOn: switch_state
+            switchOn: taskModel.switch_state
 
             onSwitchOnChanged: {
                 if (switchOn) {
-//                    switchOn = true
                     taskModel.run_exe_request()
-
                 } else {
-//                    switchOn = false
                     taskModel.kill_exe_request()
-
                 }
 
             }

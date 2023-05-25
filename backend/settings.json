@@ -9,6 +9,6 @@
         "tertiary_color": "#4c5e7c"
     },
     "log_level": "INFO",
-    "dev_mode": false,
+    "dev_mode": true,
     "standard_project": ""
 }
