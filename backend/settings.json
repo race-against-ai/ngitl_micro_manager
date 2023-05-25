@@ -10,5 +10,5 @@
     },
     "log_level": "INFO",
     "dev_mode": true,
-    "standard_project": ""
+    "standard_project": "projects\\example_project.json"
 }

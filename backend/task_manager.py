@@ -3,13 +3,10 @@ Copyright (C) 2023 twyleg, PhilippTrashman
 """
 import os
 import sys
-import time
 import json
-import subprocess
 from pathlib import Path
 from typing import List, Optional, Dict
 
-from PySide6.QtCore import Signal
 from PySide6.QtGui import QGuiApplication
 from PySide6.QtQml import QQmlApplicationEngine
 
@@ -41,10 +38,11 @@ class TaskManager:
             "dev_mode": False,
             "standard_project": ""
         }
+        self.project = self.settings["standard_project"]
         self.read_settings()
 
         self.tasks: List[TaskModel] = []
-        self.task_manager_model.project.handle_project_change_request('projects/RAAI.json')
+        self.task_manager_model.project.handle_project_change_request(self.project)
 
     def read_settings(self):
         if os.path.isfile("settings.json"):
@@ -77,6 +75,7 @@ class TaskManager:
         theme = self.settings["theme"]
         resolution = self.settings["resolution"]
         dev_mode = self.settings["dev_mode"]
+        self.project = self.settings["standard_project"]
 
         self.root_object.setProperty("width", resolution[0])
         self.root_object.setProperty("height", resolution[1])
@@ -84,20 +83,6 @@ class TaskManager:
 
         for entry, key in theme.items():
             self.root_object.setProperty(entry, key)
-
-    def read_project(self, file: str):
-        if file[-5:] == ".json":
-            print(f"reading Project: {file}")
-            with open(file, 'r') as f:
-                project = json.load(f)
-
-                if "title" in project:
-                    title = project["title"]
-                    # self.change_title(title)
-
-                tasks = project["tasks"]
-                for entry in tasks:
-                    self.tasks.append(TaskModel(entry))
 
     def run(self) -> None:
         if not self.engine.rootObjects():

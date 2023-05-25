@@ -9,24 +9,24 @@ import time
 from pathlib import Path
 from typing import List
 
-from PySide6.QtCore import QObject, Signal, Property, QCoreApplication, Slot
-from PySide6.QtWidgets import QApplication, QDialog, QFileDialog
+from PySide6.QtCore import QObject, Signal, Property
 
 
 def run_process(process_name: str, path, file: str) -> subprocess.Popen:
     """Run the wanted executable and set its delay after startup"""
     print(f'Starting Process: {process_name}')
     if path == "Directory":
-        filepath = file
+        work_dir = os.getcwd() + r'\bin'
+        filepath = fr'{work_dir}\{file}'
+        print(filepath)
+        print(work_dir)
 
     else:
-        filepath = f'{path}\\{file}'
-
-    if file[:-3] == ".py":
-        filepath = ['python', filepath]
+        filepath = fr'{path}\{file}'
+        work_dir = path
 
     process = subprocess.Popen(filepath,
-                               cwd=path,
+                               cwd=work_dir,
                                creationflags=subprocess.CREATE_NEW_CONSOLE)
 
     return process
@@ -94,7 +94,8 @@ class TaskModel(QObject):
     def handle_open_log_request(self):
         print(f'Task: {self.name} - open log requested with Log Level "{self.log_level}"')
         # under filepath we can change the file that is supposed to open
-        filepath = "example.jpg"
+        # only reason it doesn't open an actual log file is because i don't know how to create one...
+        filepath = "settings.json"
 
         if platform.system() == 'Darwin':  # macOS
             subprocess.call(('open', filepath))
@@ -330,21 +331,24 @@ class ProjectModel(QObject):
         self.task_list_changed.emit()
 
     def handle_project_change_request(self, file):
-        print("Changing Project")
-        self.handle_stop_all_tasks_request()
-        self._task_list.clear()
+        if os.path.exists(file):
+            print("Changing Project")
+            self.handle_stop_all_tasks_request()
+            self._task_list.clear()
 
-        with open(file) as f:
-            project = json.load(f)
+            with open(file) as f:
+                project = json.load(f)
 
-            if "title" in project:
-                new_title = project["title"]
-                self._project_title = new_title
-                self.project_title_changed.emit()
+                if "title" in project:
+                    new_title = project["title"]
+                    self._project_title = new_title
+                    self.project_title_changed.emit()
 
-            temp_list = []
-            tasks = project["tasks"]
-            for entry in tasks:
-                temp_list.append(TaskModel(entry))
+                temp_list = []
+                tasks = project["tasks"]
+                for entry in tasks:
+                    temp_list.append(TaskModel(entry))
 
-        self.append_tasks(temp_list)
+            self.append_tasks(temp_list)
+        else:
+            print("No Project Found")
