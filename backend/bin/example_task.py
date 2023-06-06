@@ -1,5 +1,5 @@
 from time import sleep
 
 while True:
-    print(f'foo')
-    sleep(2)
+    print("foo")
+    sleep(0.5)

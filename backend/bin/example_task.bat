@@ -1,1 +1,1 @@
-python example_task.py
+python example_task.py & pause

@@ -13,6 +13,20 @@ from PySide6.QtQml import QQmlApplicationEngine
 from task_manager_model import TaskManagerModel, TaskModel
 
 
+def find_qml_main_file(relative_path: str) -> Path:
+    search_directory_list = [
+        Path(os.getcwd()),
+        Path(os.getcwd()).parent,
+        Path(__file__).parent
+    ]
+    for directory in search_directory_list:
+        filepath = directory / relative_path
+        if filepath.is_file():
+            print(f'chose: {filepath}')
+            return filepath
+    raise FileNotFoundError(f'Unable to find QML File: {relative_path}')
+
+
 class TaskManager:
 
     def __init__(self) -> None:
@@ -23,7 +37,7 @@ class TaskManager:
         self.task_manager_model = TaskManagerModel(self.app)
 
         self.engine.rootContext().setContextProperty("task_manager_model", self.task_manager_model)
-        self.engine.load(os.fspath(Path(__file__).resolve().parent / "../frontend/qml/main.qml"))
+        self.engine.load(find_qml_main_file("frontend/qml/main.qml"))
 
         self.root_object = self.engine.rootObjects()[0]
 
@@ -68,8 +82,6 @@ class TaskManager:
             file = json.dumps(self.settings, indent=4)
             with open("settings.json", 'w') as f:
                 f.write(file)
-
-        # print(completion_check)
 
         log_level = self.settings["log_level"]
         theme = self.settings["theme"]
