@@ -1,2 +1,3 @@
 pyside6
 inkscape_svg_layer_extractor
+pyinstaller
