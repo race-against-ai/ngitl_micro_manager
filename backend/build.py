@@ -1,6 +1,23 @@
 import json
 import os
 from pathlib import Path
+import PyInstaller.__main__
+
+
+def build_micromanager() -> None:
+    """SHADOW WIZARD MONEY GANG! WE LOVE CASTING SPELLS"""
+    work_path = Path(__file__).parent.parent
+    work_path = str(work_path)
+    os.chdir(work_path)
+    print(f'Current Working Directory: {os.getcwd()}')
+
+    spec_file = 'main.spec'
+    # LEGALIZE NUCLEAR BOMBS
+
+    PyInstaller.__main__.run(['--workpath', fr'{work_path}\build', '--distpath', fr'{work_path}/dist',
+                              spec_file])
+
+    # WE JUST NUKED THE WHOLE BUILDING
 
 
 def build_settings():
@@ -10,7 +27,7 @@ def build_settings():
     """
     if os.path.exists(fr'{Path(__file__).parent.parent.parent.parent}\software'):
         print("MicroManager Initialized as Submodule")
-        work_path = fr'{Path(__file__).parent.parent.parent.parent}\software\components'
+        work_path = fr'{Path(__file__).parent.parent.parent.parent}\software'
         work_path = work_path.replace("\\", "/")
         mm_path = Path(__file__).parent.parent
 
@@ -32,7 +49,7 @@ def build_settings():
                 {
                     "name": "Image Broker",
                     "executable": "live_image_broker.exe",
-                    "working_directory": f"{work_path}/live_image_broker/dist",
+                    "working_directory": f"{work_path}/dist",
                     "delay": "1",
                     "config_file": "None",
                     "config_direction": "Directory",
@@ -72,7 +89,7 @@ def build_settings():
                 {
                     "name": "Live Visualization",
                     "executable": "live_visualization.exe",
-                    "working_directory": fr"{work_path}/live_visualization/dist",
+                    "working_directory": fr"{work_path}/dist",
                     "delay": "5",
                     "config_file": "None",
                     "config_direction": "Directory",
@@ -102,10 +119,10 @@ def build_settings():
                 {
                     "name": "Control Panel",
                     "executable": "control_panel.exe",
-                    "working_directory": fr"{work_path}/control_panel/dist",
+                    "working_directory": fr"{work_path}/dist",
                     "delay": "5",
-                    "config_file": "None",
-                    "config_direction": "Directory",
+                    "config_file": "config.json",
+                    "config_direction": fr"{work_path}/dist",
                     "log_level": "INFO",
                     "autostart": True
                 },
@@ -144,4 +161,6 @@ def build_settings():
     else:
         print("---! Script only works if MicroManager is imported as a Submodule for RAAI !---")
 
+
+build_micromanager()
 build_settings()
