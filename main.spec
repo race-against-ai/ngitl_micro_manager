@@ -30,7 +30,7 @@ exe = EXE(
     a.zipfiles,
     a.datas,
     [],
-    name='main',
+    name='MicroManager',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
