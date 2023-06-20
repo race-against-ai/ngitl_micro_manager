@@ -1,7 +1,7 @@
 import json
 import os
 from pathlib import Path
-import PyInstaller.__main__
+# import PyInstaller.__main__
 
 
 def build_micromanager() -> None:
@@ -121,8 +121,8 @@ def build_settings():
                     "executable": "control_panel.exe",
                     "working_directory": fr"{work_path}/dist",
                     "delay": "5",
-                    "config_file": "config.json",
-                    "config_direction": fr"{work_path}/dist",
+                    "config_file": "None",
+                    "config_direction": "",
                     "log_level": "INFO",
                     "autostart": True
                 },
@@ -162,6 +162,13 @@ def build_settings():
                 print("creating settings file")
                 file = json.dumps(settings, indent=4)
                 f.write(file)
+
+            for element in project["tasks"]:
+                component_name = element["executable"][:-4]
+                print(component_name)
+                if os.path.exists(fr"{work_path}/dist/{component_name}.json"):
+                    element["config_file"] = f"{component_name}.json"
+                    element["config_directory"] = fr"{work_path}/dist"
 
             with open(f"{mm_path}/dist/projects/race_against_ai.json", "w") as f:
                 print("creating RAAI project file")
