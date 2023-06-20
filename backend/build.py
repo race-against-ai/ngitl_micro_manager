@@ -168,7 +168,7 @@ def build_settings():
                 # print(component_name)
                 if os.path.exists(fr"{work_path}/dist/{component_name}.json"):
                     element["config_file"] = f"{component_name}.json"
-                    element["config_directory"] = fr"{work_path}/dist"
+                    element["config_direction"] = fr"{work_path}/dist"
                     print(element["config_file"])
 
             with open(f"{mm_path}/dist/projects/race_against_ai.json", "w") as f:
