@@ -136,6 +136,16 @@ def build_settings():
                     "log_level": "INFO",
                     "autostart": False
                 },
+                {
+                    "name": "Tracker Fallback",
+                    "executable": "start_tracker_fallback.bat",
+                    "working_directory": fr"{work_path}",
+                    "delay": "0",
+                    "config_file": "None",
+                    "config_direction": "Directory",
+                    "log_level": "INFO",
+                    "autostart": False
+                },
             ]
         }
 
