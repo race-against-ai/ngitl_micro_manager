@@ -40,16 +40,8 @@ Rectangle{
             }
         }
 
-
-
-    MouseArea {
-        anchors.fill: parent
-        onClicked: switchOn = !switchOn
-    }
-
     Text {
         text: switchOn ? ontext : offtext
-//        font.bold: true
         font.pixelSize: parent.height * 0.5
         anchors.centerIn: parent
     }

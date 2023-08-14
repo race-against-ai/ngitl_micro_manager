@@ -98,5 +98,6 @@ class TaskManager:
 
     def run(self) -> None:
         if not self.engine.rootObjects():
+            self.task_manager_model.project.handle_stop_all_tasks_request()
             sys.exit(-1)
         sys.exit(self.app.exec())

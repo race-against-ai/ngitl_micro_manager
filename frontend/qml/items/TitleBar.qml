@@ -64,14 +64,14 @@ Rectangle{
                 height: command.height/2
                 width: command.width/8
 
-                onSwitchOnChanged: {
-                    if (switchOn) {
-                        task_manager_model.project.start_all_tasks_request()
+                switchOn: task_manager_model.project.task_running
 
-                    } else {
-                        task_manager_model.project.stop_all_tasks_request()
-                    }
+                MouseArea{
+                    anchors.fill: parent
+                    onClicked: task_manager_model.project.start_all_tasks_request()
+
                 }
+
             }
 
             ButtonTemp{

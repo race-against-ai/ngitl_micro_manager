@@ -86,10 +86,6 @@ Window {
 
                     model: task_manager_model.project.task_list
 
-//                    onItemAdded: {
-//                        active_tasks.push(false)
-//                    }
-
                     delegate: Task {
                         width: window.width-4
                         taskModel: modelData

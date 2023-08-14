@@ -163,13 +163,18 @@ Rectangle {
 
             switchOn: taskModel.switch_state
 
-            onSwitchOnChanged: {
-                if (switchOn) {
-                    taskModel.run_exe_request()
-                } else {
-                    taskModel.kill_exe_request()
-                }
 
+//            onActivationStatusChanged: {
+//                if (activationStatus) {
+//                    taskModel.run_exe_request()
+//                } else {
+//                    taskModel.kill_exe_request()
+//                }
+
+//            }
+            MouseArea{
+            anchors.fill: parent
+            onClicked: taskModel.switch_state_request()
             }
 
         }

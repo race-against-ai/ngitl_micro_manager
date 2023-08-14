@@ -9,7 +9,7 @@ import time
 from pathlib import Path
 from typing import List
 
-from PySide6.QtCore import QObject, Signal, Property
+from PySide6.QtCore import QObject, Signal, Property, QTimer
 
 
 def run_process(process_name: str, path, file: str) -> subprocess.Popen:
@@ -45,6 +45,7 @@ class TaskModel(QObject):
     run_exe_request = Signal(name="run_exe_request")
     close_exe_request = Signal(name='close_exe_request')
     kill_exe_request = Signal(name='kill_exe_request')
+    switch_state_request = Signal(name="switch_state_request")
 
     def __init__(self, task: dict) -> None:
         QObject.__init__(self)
@@ -62,13 +63,18 @@ class TaskModel(QObject):
 
         # check if the executable is currently running
         self.process = None
+        # A QTimer checking to see if the process is still running
+        self.process_check_timer = QTimer(self)
+        self.process_check_timer.timeout.connect(self.check_process_status)
 
+        # Connect functions to requests
         self.open_log_request.connect(self.handle_open_log_request)
         self.open_config_request.connect(self.handle_open_config_request)
         self.run_exe_request.connect(self.handle_run_exe_request)
         self.close_exe_request.connect(self.handle_close_exe_request)
         self.kill_exe_request.connect(self.handle_kill_exe_request)
         self.autostart_state_request.connect(self.autostart_setter)
+        self.switch_state_request.connect(self.handle_switch_state_request)
 
     def handle_open_config_request(self):
         print(f"Task: {self.name} - open config requested")
@@ -104,6 +110,14 @@ class TaskModel(QObject):
         else:  # Linux
             subprocess.call(('xdg-open', filepath))
 
+    def check_process_status(self):
+        if self.process is not None and self.process.poll() is not None:
+            print(f'Process {self.name} has exited.')
+            self.process = None
+            self.set_state_color("red")
+            self.set_switch_stage(False)
+            self.process_check_timer.stop()
+
     def handle_run_exe_request(self):
         if self.executable == "None":
             print(f"No Executable set for Task: {self.name}")
@@ -121,6 +135,13 @@ class TaskModel(QObject):
         if self.executable != "None":
             print(f'Task: {self.name} - kill exe requested')
             self.kill_process()
+
+    def handle_switch_state_request(self):
+        print("switch changed")
+        if self._switch_state:
+            self.kill_process()
+        else:
+            self.run_process()
 
     @Property("QString", notify=name_changed)
     def name(self) -> str:
@@ -147,20 +168,21 @@ class TaskModel(QObject):
             self.autostart = value
             # self.autostart_state_changed.emit()
 
-    def set_state_color(self, value):
+    def set_state_color(self, value) -> None:
         self._state_color = value
         self.state_color_changed.emit()
 
-    def set_switch_stage(self, value: bool):
+    def set_switch_stage(self, value: bool) -> None:
         self._switch_state = value
         self.switch_state_changed.emit()
 
     def run_process(self) -> None:
         """Run the wanted executable and set its delay after startup"""
-        self.process = run_process(self.name, self.path, self.executable)
+        self.process = run_process(self._name, self.path, self.executable)
 
         self.set_state_color("green")
         self.set_switch_stage(True)
+        self.process_check_timer.start(500)
 
     def terminate_process(self) -> None:
         if self.process is not None:
@@ -170,8 +192,8 @@ class TaskModel(QObject):
             self.set_state_color("red")
             self.set_switch_stage(False)
 
-        else:
-            print(f"{self.name} is not running")
+        # else:
+        #     print(f"{self.name} is not running")
 
     def kill_process(self) -> None:
         if self.process is not None:
@@ -182,8 +204,8 @@ class TaskModel(QObject):
             self.set_state_color("red")
             self.set_switch_stage(False)
 
-        else:
-            print(f'Cannot kill {self.name}: not running')
+        # else:
+        #     print(f'Cannot kill {self.name}: not running')
 
 
 class TaskManagerModel(QObject):
@@ -281,11 +303,12 @@ class SettingsModel(QObject):
 
 
 class ProjectModel(QObject):
+    task_running_changed = Signal()
     task_list_changed = Signal(name="task_list_changed")
     project_title_changed = Signal(name="project_title_changed")
 
     start_all_tasks_request = Signal(name="start_all_tasks_request")
-    stop_all_tasks_request = Signal(name="stop_all_tasks_request")
+    # stop_all_tasks_request = Signal(name="stop_all_tasks_request")
     download_request = Signal(name="download_request")
 
     # project_change_request = Signal(name="project_change_request")
@@ -296,25 +319,56 @@ class ProjectModel(QObject):
         self._project_title = "Micro Manager"
         self._task_list: List[TaskModel] = []
         self.start_all_tasks_request.connect(self.handle_start_all_tasks_request)
-        self.stop_all_tasks_request.connect(self.handle_stop_all_tasks_request)
+        # self.stop_all_tasks_request.connect(self.handle_stop_all_tasks_request)
         self.download_request.connect(self.handle_download_request)
         self.project_change_request.connect(self.handle_project_change_request)
 
-    def handle_start_all_tasks_request(self) -> None:
-        for task in self.task_list:
-            if task.autostart and not task.process and task.executable != "None":
-                task.run_process()
-                print(f'Task {task.name}: Pausing for {task.delay}s')
-                time.sleep(int(task.delay))
+        # flag responsible for the start all button
+        self._task_running = False
+        # Timer to check if any Task is running to set the Button
+        self.task_check_timer = QTimer(self)
+        self.task_check_timer.timeout.connect(self.check_task_status)
+        self.task_check_timer.start(500)
 
-    def handle_stop_all_tasks_request(self) -> None:
-        for task in self._task_list:
-            # print(task.name)
-            if task.process:
-                task.kill_process()
+    def check_task_status(self):
+        # print(self._task_running)
+        if self._task_list:
+            for task in self._task_list:
+                if task.process:
+                    # print("doing stuff")
+                    self.set_task_running(True)
+                    break
+                else:
+                    # print("no task running")
+                    self.set_task_running(False)
+
+    def handle_start_all_tasks_request(self):
+        if self._task_running:
+            self.stop_all_tasks()
+        else:
+            self.start_all_tasks()
+
+    def start_all_tasks(self) -> None:
+        if self._task_list:
+            for task in self._task_list:
+                if task.autostart and not task.process and task.executable != "None":
+                    task.run_process()
+                    print(f'Task {task.name}: Pausing for {task.delay}s')
+                    time.sleep(int(task.delay))
+
+    def stop_all_tasks(self) -> None:
+        if self._task_list:
+            for task in self._task_list:
+                # print(task.name)
+                if task.process:
+                    task.kill_process()
 
     def handle_download_request(self) -> None:
         print("download request received")
+
+    def set_task_running(self, state: bool) -> None:
+        self._task_running = state
+        self.task_running_changed.emit()
 
     @Property("QVariantList", notify=task_list_changed)
     def task_list(self):
@@ -323,6 +377,10 @@ class ProjectModel(QObject):
     @Property("QVariant", notify=project_title_changed)
     def project_title(self):
         return self._project_title
+
+    @Property(bool, notify=task_running_changed)
+    def task_running(self) -> bool:
+        return self._task_running
 
     def append_tasks(self, tasks: []):
         """Shown tasks are getting appended here"""
@@ -333,7 +391,7 @@ class ProjectModel(QObject):
     def handle_project_change_request(self, file):
         if os.path.exists(file):
             print("Changing Project")
-            self.handle_stop_all_tasks_request()
+            self.stop_all_tasks()
             self._task_list.clear()
 
             with open(file) as f:
