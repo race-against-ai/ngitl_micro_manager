@@ -109,23 +109,9 @@ Window {
                     }
                 }
             }
-//            ButtonTemp{
-//                width: parent.width
-//                height: parent.height/10
-//                buttonText: "Project Editor"
-
-//                onClicked:{
-//                    top_title = "Project Editor"
-//                    if(tasks.visible){
-//                        tasks.visible = false
-//                    }
-//                    if(settings.visible){
-//                        settings.visible = false
-//                    }
-//                }
-//            }
         }
     }
+
 
     Rectangle{
         id: set_win
@@ -148,4 +134,50 @@ Window {
         }
 
     }
+
+    Item {
+        id: customDialog
+        width: pj.width
+        height: pj.height
+        visible: task_manager_model.settings.save_dialog
+
+        Rectangle {
+            anchors.fill: parent
+            color: "transparent"
+
+            MouseArea {
+                anchors.fill: parent
+                onClicked: task_manager_model.settings.disable_save_dialog()
+            }
+        }
+
+        Rectangle {
+            width: parent.width
+            height: parent.height
+            color: "#80000000" // Semi-transparent darkening overlay
+            border.color: "transparent"
+
+            Rectangle {
+                anchors.centerIn: parent
+                width: parent.width / 3
+                height: parent.height / 3
+                color: window.primary_color
+                border.color: window.secondary_color
+                border.width: 2
+                radius: 10
+                clip: true
+
+                Text {
+                    text: "Saved File as: \n" + task_manager_model.settings.file_name
+                    font.pixelSize: parent.height/5
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    color: window.lightFontColor
+                    anchors.centerIn: parent
+
+                }
+            }
+        }
+    }
+
 }

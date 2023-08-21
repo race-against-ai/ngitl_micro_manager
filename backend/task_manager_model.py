@@ -8,18 +8,25 @@ import json
 import time
 from pathlib import Path
 from typing import List
+import uuid
+import concurrent.futures
+from functools import partial
+import threading
 
 from PySide6.QtCore import QObject, Signal, Property, QTimer
 
 
-def run_process(process_name: str, path, file: str) -> subprocess.Popen:
+MAX_THREAD_COUNT = 1
+
+
+def run_process(process_name: str, path: str, file: str) -> subprocess.Popen:
     """Run the wanted executable and set its delay after startup"""
-    print(f'Starting Process: {process_name}')
+    # print(f'Starting Process: {process_name}')
     if path == "Directory":
         work_dir = os.getcwd() + r'\bin'
         filepath = fr'{work_dir}\{file}'
-        print(filepath)
-        print(work_dir)
+        # print(filepath)
+        # print(work_dir)
 
     else:
         filepath = fr'{path}\{file}'
@@ -42,7 +49,8 @@ class TaskModel(QObject):
 
     open_log_request = Signal(name="open_log_request")
     open_config_request = Signal(name="open_config_request")
-    run_exe_request = Signal(name="run_exe_request")
+    # run_exe_request = Signal(name="run_exe_request")
+    run_exe_request = Signal(str)
     close_exe_request = Signal(name='close_exe_request')
     kill_exe_request = Signal(name='kill_exe_request')
     switch_state_request = Signal(name="switch_state_request")
@@ -50,8 +58,11 @@ class TaskModel(QObject):
     def __init__(self, task: dict) -> None:
         QObject.__init__(self)
         self._name = task['name']
+        self.id = task['id']
         self._state_color = 'red'
         self._switch_state = False
+
+        self.request_start = False
 
         self.autostart = task['autostart']
         self.path = task['working_directory']
@@ -66,11 +77,12 @@ class TaskModel(QObject):
         # A QTimer checking to see if the process is still running
         self.process_check_timer = QTimer(self)
         self.process_check_timer.timeout.connect(self.check_process_status)
+        self.process_check_timer.start(500)
 
         # Connect functions to requests
         self.open_log_request.connect(self.handle_open_log_request)
         self.open_config_request.connect(self.handle_open_config_request)
-        self.run_exe_request.connect(self.handle_run_exe_request)
+        # self.run_exe_request.connect(self.handle_run_exe_request)
         self.close_exe_request.connect(self.handle_close_exe_request)
         self.kill_exe_request.connect(self.handle_kill_exe_request)
         self.autostart_state_request.connect(self.autostart_setter)
@@ -98,7 +110,7 @@ class TaskModel(QObject):
             print("Task has no Config File Configured")
 
     def handle_open_log_request(self):
-        print(f'Task: {self.name} - open log requested with Log Level "{self.log_level}"')
+        # print(f'Task: {self.name} - open log requested with Log Level "{self.log_level}"')
         # under filepath we can change the file that is supposed to open
         # only reason it doesn't open an actual log file is because i don't know how to create one...
         filepath = "settings.json"
@@ -112,7 +124,7 @@ class TaskModel(QObject):
 
     def check_process_status(self):
         if self.process is not None and self.process.poll() is not None:
-            print(f'Process {self.name} has exited.')
+            print(f'Process {self.name} has been closed.')
             self.process = None
             self.set_state_color("red")
             self.set_switch_stage(False)
@@ -123,8 +135,9 @@ class TaskModel(QObject):
             print(f"No Executable set for Task: {self.name}")
 
         elif self.process is None:
-            print(f'Task: {self.name} - open exe requested')
+            # print(f'Task: {self.name} - open exe requested')
             self.run_process()
+
 
     def handle_close_exe_request(self):
         if self.executable != "None":
@@ -137,11 +150,8 @@ class TaskModel(QObject):
             self.kill_process()
 
     def handle_switch_state_request(self):
-        print("switch changed")
-        if self._switch_state:
-            self.kill_process()
-        else:
-            self.run_process()
+        # print("switch changed")
+        self.run_process()
 
     @Property("QString", notify=name_changed)
     def name(self) -> str:
@@ -152,7 +162,7 @@ class TaskModel(QObject):
         self.name_changed.emit()
 
     @Property(str, notify=state_color_changed)
-    def state_color(self):
+    def state_color(self) -> str:
         return self._state_color
 
     @Property(bool, notify=switch_state_changed)
@@ -178,11 +188,14 @@ class TaskModel(QObject):
 
     def run_process(self) -> None:
         """Run the wanted executable and set its delay after startup"""
-        self.process = run_process(self._name, self.path, self.executable)
+        # self.process = run_process(self._name, self.path, self.executable)
+        if not self.request_start:
+            self.request_start = True
+            self.run_exe_request.emit(self.id)
 
-        self.set_state_color("green")
-        self.set_switch_stage(True)
-        self.process_check_timer.start(500)
+            # self.set_state_color("green")
+            # self.set_switch_stage(True)
+            # self.process_check_timer.start(500)
 
     def terminate_process(self) -> None:
         if self.process is not None:
@@ -208,6 +221,11 @@ class TaskModel(QObject):
         #     print(f'Cannot kill {self.name}: not running')
 
 
+class TaskBackend:
+    def __init__(self, task_data: dict):
+        print("")
+
+
 class TaskManagerModel(QObject):
     project_changed = Signal(name="task_list_changed")
     settings_changed = Signal(name="settings_changed")
@@ -227,19 +245,24 @@ class TaskManagerModel(QObject):
 
 
 class SettingsModel(QObject):
-
     theme_change_request = Signal(name="theme_change_request")
     open_folder_request = Signal(name="open_folder_request")
+    disable_save_dialog = Signal(name="disable_save_dialog")
     create_json_request = Signal(str, list, str)
+    save_dialog_changed = Signal()
+    filename_changed = Signal()
 
     def __init__(self, parent=None) -> None:
         super().__init__(parent)
         self.theme_change_request.connect(self.handle_theme_change_request)
         self.open_folder_request.connect(self.handle_open_folder_request)
         self.create_json_request.connect(self.handle_create_json)
+        self.disable_save_dialog.connect(self.handle_disable_save_dialog)
 
         self.project = None
 
+        self._save_dialog = False
+        self._file_name = "new_project.json"
         self.current_path = Path(__file__).parent
 
     def handle_theme_change_request(self) -> None:
@@ -257,8 +280,7 @@ class SettingsModel(QObject):
         print("Opening Folder")
         subprocess.Popen(f'explorer "{self.current_path}"')
 
-    @staticmethod
-    def handle_create_json(filepath, content, filename) -> None:
+    def handle_create_json(self, filepath, content, filename) -> None:
         """Exports give arguments from QML to a new Json file.
         filepath currently is useless as I couldn't figure out how to enable 'select Folder' mode for FileDialog with our
         QtQuick.Dialogs Version :("""
@@ -280,19 +302,17 @@ class SettingsModel(QObject):
             }
             export_list.append(task_dict)
         finished_dict = {"title": content[0]["title"], "tasks": export_list}
-        # print(f"finished list is:"
-        #       f"{finished_list}")
         file = json.dumps(finished_dict, indent=4)
         filename = filename.strip().replace(" ", "_").lower()
         extension = ".json"
-        # small check so there isn't a prokect.json.json ;)
+        # small check so there isn't a project.json.json ;)
         if filename[-5:] == extension:
             filename = filename[:-5]
 
-        new_filename = filename+extension
+        new_filename = filename + extension
         # A Check to ensure that other projects aren't being overwritten
         counter = 1
-        while os.path.exists(filepath+"/"+new_filename):
+        while os.path.exists(filepath + "/" + new_filename):
             new_filename = f'{filename}_{counter}{extension}'
             counter += 1
 
@@ -300,10 +320,27 @@ class SettingsModel(QObject):
         with open(f"{filepath}/{new_filename}", 'w') as f:
             f.write(file)
             print(f'File save as: {new_filename}')
+        # print("hey now, im a rockstar get your game on")
+        self._file_name = new_filename
+        self._save_dialog = True
+        self.filename_changed.emit()
+        self.save_dialog_changed.emit()
+
+    def handle_disable_save_dialog(self):
+        self._save_dialog = False
+        self.save_dialog_changed.emit()
+
+    @Property(bool, notify=save_dialog_changed)
+    def save_dialog(self) -> bool:
+        return self._save_dialog
+
+    @Property(str, notify=filename_changed)
+    def file_name(self):
+        return self._file_name
 
 
 class ProjectModel(QObject):
-    task_running_changed = Signal()
+    taskRunningChanged = Signal()
     task_list_changed = Signal(name="task_list_changed")
     project_title_changed = Signal(name="project_title_changed")
 
@@ -318,6 +355,16 @@ class ProjectModel(QObject):
         super().__init__(parent)
         self._project_title = "Micro Manager"
         self._task_list: List[TaskModel] = []
+        self._task_dict: dict[str, TaskModel] = {}
+        self._child_dict: dict[str, dict] = {}
+
+        # self._worker_thread = threading.Thread(target=self._child_worker)
+        # self._worker_thread.start()
+        # self._threads = []
+        # self._subprocess_started = threading.Event()
+        self._lock = threading.Lock()
+        self._executor = concurrent.futures.ThreadPoolExecutor(2)
+
         self.start_all_tasks_request.connect(self.handle_start_all_tasks_request)
         # self.stop_all_tasks_request.connect(self.handle_stop_all_tasks_request)
         self.download_request.connect(self.handle_download_request)
@@ -330,17 +377,39 @@ class ProjectModel(QObject):
         self.task_check_timer.timeout.connect(self.check_task_status)
         self.task_check_timer.start(500)
 
+    def delegate_task(self, child_id, name, path, executable):
+        future = self._executor.submit(self._child_worker, child_id, name, path, executable)
+        future.add_done_callback(partial(self._task_completed, child_id))
+
+    def _child_worker(self, child_id, name, path, executable):
+        sleep_timer = int(self._child_dict[child_id]['delay'])
+
+        process = run_process(name, path, executable)
+        time.sleep(sleep_timer)
+
+        with self._lock:
+            self._task_dict[child_id].process = process
+
+    def _task_completed(self, child_id, future):
+        self._task_dict[child_id].request_start = False
+        self._task_dict[child_id].set_state_color("green")
+        self._task_dict[child_id].set_switch_stage(True)
+        pass
+
     def check_task_status(self):
-        # print(self._task_running)
+        flag = False
         if self._task_list:
             for task in self._task_list:
                 if task.process:
-                    # print("doing stuff")
-                    self.set_task_running(True)
+                    # self.set_task_running(True)
+                    flag = True
                     break
-                else:
-                    # print("no task running")
-                    self.set_task_running(False)
+                elif not task.process:
+                    # self.set_task_running(False)
+                    flag = False
+
+            if self._task_running != flag:
+                self.set_task_running(flag)
 
     def handle_start_all_tasks_request(self):
         if self._task_running:
@@ -350,16 +419,13 @@ class ProjectModel(QObject):
 
     def start_all_tasks(self) -> None:
         if self._task_list:
-            for task in self._task_list:
+            for name, task in self._task_dict.items():
                 if task.autostart and not task.process and task.executable != "None":
                     task.run_process()
-                    print(f'Task {task.name}: Pausing for {task.delay}s')
-                    time.sleep(int(task.delay))
 
     def stop_all_tasks(self) -> None:
         if self._task_list:
-            for task in self._task_list:
-                # print(task.name)
+            for name, task in self._task_dict.items():
                 if task.process:
                     task.kill_process()
 
@@ -368,7 +434,22 @@ class ProjectModel(QObject):
 
     def set_task_running(self, state: bool) -> None:
         self._task_running = state
-        self.task_running_changed.emit()
+        self.taskRunningChanged.emit()
+
+    def handle_child_execution(self, child_id) -> None:
+        if self._task_dict[child_id].process is None:
+            name = str(self._task_dict[child_id].name)
+            path = self._task_dict[child_id].path
+            executable = self._task_dict[child_id].executable
+            # self._task_dict[child_id].process = run_process(name, path, executable)
+            self.delegate_task(child_id, name, path, executable)
+
+        elif self._task_dict[child_id].process is not None:
+            subprocess.call(['taskkill', '/F', '/T', '/PID', str(self._task_dict[child_id].process.pid)])
+            self._task_dict[child_id].process = None
+            self._task_dict[child_id].set_state_color("red")
+            self._task_dict[child_id].set_switch_stage(False)
+            self._task_dict[child_id].request_start = False
 
     @Property("QVariantList", notify=task_list_changed)
     def task_list(self):
@@ -378,7 +459,7 @@ class ProjectModel(QObject):
     def project_title(self):
         return self._project_title
 
-    @Property(bool, notify=task_running_changed)
+    @Property(bool, notify=taskRunningChanged)
     def task_running(self) -> bool:
         return self._task_running
 
@@ -391,6 +472,7 @@ class ProjectModel(QObject):
     def handle_project_change_request(self, file):
         if os.path.exists(file):
             print("Changing Project")
+
             self.stop_all_tasks()
             self._task_list.clear()
 
@@ -399,13 +481,24 @@ class ProjectModel(QObject):
 
                 if "title" in project:
                     new_title = project["title"]
-                    self._project_title = new_title
-                    self.project_title_changed.emit()
+
+                else:
+                    new_title = "MicroManager"
+
+                self._project_title = new_title
+                self.project_title_changed.emit()
 
                 temp_list = []
                 tasks = project["tasks"]
+
                 for entry in tasks:
-                    temp_list.append(TaskModel(entry))
+                    ident = str(uuid.uuid4())
+                    entry["id"] = ident
+                    child = TaskModel(entry)
+                    temp_list.append(child)
+                    self._task_dict[ident] = child
+                    self._child_dict[ident] = entry
+                    child.run_exe_request.connect(self.handle_child_execution)
 
             self.append_tasks(temp_list)
         else:

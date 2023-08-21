@@ -68,9 +68,28 @@ Rectangle{
 
                 MouseArea{
                     anchors.fill: parent
-                    onClicked: task_manager_model.project.start_all_tasks_request()
-
+                    onClicked: {
+                        task_manager_model.project.start_all_tasks_request()
+                    }
                 }
+
+
+                Connections{
+                    target: task_manager_model.project
+                    function onTaskRunningChanged(){
+                       console.log(task_manager_model.project.task_running)
+//                       start_all.switchOn = task_manager_model.project.task_running
+                    }
+                 }
+
+                Connections{
+                    target: start_all
+                    function onSwitchOnChanged(){
+                       console.log("onSwitchOn: " + start_all.switchOn)
+//                        start_all.switchOn = task_manager_model.project.task_running
+                    }
+                 }
+
 
             }
 
@@ -110,7 +129,6 @@ Rectangle{
         onAccepted: {
             fileDialog.project_file = fileDialog.selectedFile.toString().substring(8);
             task_manager_model.project.project_change_request(fileDialog.project_file);
-            start_all.switchOn = false
 
 //            Qt.quit()
         }

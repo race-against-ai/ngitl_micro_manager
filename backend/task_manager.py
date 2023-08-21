@@ -27,6 +27,11 @@ def find_qml_main_file(relative_path: str) -> Path:
     raise FileNotFoundError(f'Unable to find QML File: {relative_path}')
 
 
+def resource_path() -> Path:
+    base_path = getattr(sys, "_MEIPASS", os.getcwd())
+    return Path(base_path)
+
+
 class TaskManager:
 
     def __init__(self) -> None:
@@ -50,19 +55,24 @@ class TaskManager:
             },
             "log_level": "INFO",
             "dev_mode": False,
-            "standard_project": ""
+            "standard_project": "",
+            "resource_downloader": {
+                "url": "https://cloud.ngitl.dev/remote.php/dav/files/raai_download/",
+                "client_name": "raai_download",
+                "client_password": "mJpyehF5M5ehWJQKBsxOcW3ctn2tm4Ip"
+            },
         }
         self.project = self.settings["standard_project"]
-        self.read_settings()
+        self.read_settings(find_qml_main_file("mm_settings.json"))
 
         self.tasks: List[TaskModel] = []
         self.task_manager_model.project.handle_project_change_request(self.project)
 
-    def read_settings(self):
-        if os.path.isfile("settings.json"):
+    def read_settings(self, filepath):
+        if os.path.isfile(filepath):
             completion_check = True
 
-            with open('settings.json', 'r') as f:
+            with open(filepath, 'r') as f:
                 if completion_check:
                     file = json.load(f)
                     for key in self.settings:
@@ -74,13 +84,13 @@ class TaskManager:
 
             if not completion_check:
                 file = json.dumps(self.settings, indent=4)
-                with open("settings.json", 'w') as f:
+                with open(filepath, 'w') as f:
                     f.write(file)
 
         else:
             print("Settings File not Found: Creating new at root location")
             file = json.dumps(self.settings, indent=4)
-            with open("settings.json", 'w') as f:
+            with open("mm_settings.json", 'w') as f:
                 f.write(file)
 
         log_level = self.settings["log_level"]
