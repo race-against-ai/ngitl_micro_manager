@@ -66,4 +66,4 @@ Colour Theme:<br>
 Changes the colour theme of the Application (Dark Material and Light NGITL are the best ones ;) )
 
 ### Project Creator
-Component is just Frontend. It uses a now deprecated version of `FileDialog after you insert all the Information into it, the Info gets send over to <br> the backend where it then gets saved as a JSON file
+Component is just Frontend. It uses a now deprecated version of `FileDialog after you insert all the Information into it, the Info gets send over to the backend where it then gets saved as a JSON file
