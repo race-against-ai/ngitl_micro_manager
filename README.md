@@ -59,10 +59,10 @@ Every Task is located inside `ProjectModel._task_list
 As of yet, changing the actual settings isn't available but the settings only consist on the Frontend. <br>
 
 
-Enabling Dev Mode<br>:
+Enabling Dev Mode:<br>
 Dev mode only allows to control if autostart should be enabled for a specific task or not.
 
-Colour Theme<br>:
+Colour Theme:<br>
 Changes the colour theme of the Application (Dark Material and Light NGITL are the best ones ;) )
 
 ### Project Creator
