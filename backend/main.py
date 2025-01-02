@@ -1,8 +1,13 @@
 """"
-Copyright (C) 2022 twyleg
+Copyright (C) 2023 twyleg, PhilippTrashman
 """
 from task_manager import TaskManager
 
-if __name__ == "__main__":
+
+def main():
     task_manager = TaskManager()
     task_manager.run()
+
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,25 @@
+{
+    "title": "Example Project",
+    "tasks": [
+        {
+            "name": "Print Foo",
+            "executable": "example_task.bat",
+            "working_directory": "Directory",
+            "delay": "1",
+            "config_file": "None",
+            "config_direction": "Directory",
+            "log_level": "INFO",
+            "autostart": true
+        },
+        {
+            "name": "Print Foo 2",
+            "executable": "example_task.bat",
+            "working_directory": "Directory",
+            "delay": "2",
+            "config_file": "None",
+            "config_direction": "Directory",
+            "log_level": "INFO",
+            "autostart": true
+        }
+    ]
+}

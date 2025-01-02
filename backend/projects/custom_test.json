@@ -1,0 +1,35 @@
+{
+    "title": "Custom Test",
+    "tasks": [
+        {
+            "name": "Task 1",
+            "executable": "example_task.bat",
+            "working_directory": "C:/Users/VW2SMDW/Repos/RAAI/micro_manager/backend/bin",
+            "delay": "0",
+            "config_file": "None",
+            "config_direction": "Directory",
+            "log_level": "INFO",
+            "autostart": true
+        },
+        {
+            "name": "Task 2",
+            "executable": "start_micromanager.bat",
+            "working_directory": "C:/Users/VW2SMDW/Repos/RAAI/micro_manager",
+            "delay": "0",
+            "config_file": "None",
+            "config_direction": "None",
+            "log_level": "INFO",
+            "autostart": true
+        },
+        {
+            "name": "Task 3",
+            "executable": "start_micromanager.bat",
+            "working_directory": "C:/Users/VW2SMDW/Repos/RAAI/ngitl_micro_manager",
+            "delay": "0",
+            "config_file": "None",
+            "config_direction": "None",
+            "log_level": "INFO",
+            "autostart": true
+        }
+    ]
+}
