@@ -12,25 +12,25 @@ It also includes a Project Creator in its settings window, to set up a project.
 
 To set up a development environment and install all requirements, run the following commands:
 
-# windows
+### windows
 
     python -m venv venv
     venv/Scripts/activate
     python -m pip install -r requirements.txt
 
-# unix-based systems (macOS, Linux)
+### unix-based systems (macOS, Linux)
 
     python3 -m venv venv
     source venv/bin/activate
     python3 -m pip install -r requirements.txt
 
-# Run
+### Run
 
     python backend/main.py
 
-### Structure
+## Structure
 
-## Basics
+### Basics
 The Application is just a basic QML Application with python as a backend. <br> task_manager.py reads out the settings file and based on these it creates the Frontend window. <br>
 
 While creating the Window it also connects the model file with the command:
@@ -41,7 +41,7 @@ With that the Frontend knows where to call backend tasks.
 
 In the model file the different types of Backend Tasks are connected in the class **TaskManagerModel**
 
-## Task Creation
+### Task Creation
 Tasks are created within the **ProjectModel** <br> This Model is where all project specific tasks are located, including the creation of Tasks<br>
 
 The Function responsible for task Creation is called
@@ -55,15 +55,15 @@ If the Tasks runs the Red Dot is also should be turning green.
 
 Every Task is located inside `ProjectModel._task_list
 
-## Settings
+### Settings
 As of yet, changing the actual settings isn't available but the settings only consist on the Frontend. <br>
 
-# Enabling Dev Mode. <br>
+#### Enabling Dev Mode. <br>
 Dev mode only allows to control if autostart should be enabled for a specific task or not.
 
-# Colour Theme
+#### Colour Theme
 Changes the colour theme of the Application (Dark Material and Light NGITL are the best ones ;) )
 
-## Project Creator
+### Project Creator
 Component is just Frontend.<br>
 It uses a now deprecated version of `FileDialog after you insert all the Information into it, the Info gets send over to <br> the backend where it then gets saved as a JSON file
