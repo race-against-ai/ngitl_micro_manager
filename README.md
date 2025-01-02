@@ -1,8 +1,7 @@
 # NGITL Micromanager
 
 
-The NGITL MicroManager helps with starting and managing all of the Race-Against-AI modules.
-Usage includes Component managing, so you're able to let only the components you need to run and replace existing components with your own that you're currently working on.
+The NGITL MicroManager helps with starting and managing different projects (is for example used to manage all modules in the Race-Against-AI project). Usage includes Component managing, so you're able to let only the components you need to run and replace existing components with components you're currently working on. 
 
 It also includes a Project Creator in its settings window, to set up a project.
 
@@ -58,10 +57,11 @@ Every Task is located inside `ProjectModel._task_list
 ### Settings
 As of yet, changing the actual settings isn't available but the settings only consist on the Frontend. <br>
 
-#### Enabling Dev Mode. <br>
+
+Enabling Dev Mode<br>:
 Dev mode only allows to control if autostart should be enabled for a specific task or not.
 
-#### Colour Theme
+Colour Theme<br>:
 Changes the colour theme of the Application (Dark Material and Light NGITL are the best ones ;) )
 
 ### Project Creator
