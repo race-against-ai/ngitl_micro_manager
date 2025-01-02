@@ -1,7 +1,8 @@
 # NGITL Micromanager
 
 
-The NGITL MicroManager helps with starting and managing different projects (is for example used to manage all modules in the Race-Against-AI project). Usage includes Component managing, so you're able to let only the components you need to run and replace existing components with components you're currently working on. 
+The NGITL MicroManager helps with starting and managing different projects (is for example used to manage all modules in the Race-Against-AI project). 
+Usage includes Component managing, so you're able to let only the components you need to run and replace existing components with components you're currently working on. 
 
 It also includes a Project Creator in its settings window, to set up a project.
 
